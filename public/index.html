@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#003399">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <title>Nations League Pronostiek 🏆</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Firebase v10 compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <!-- ============================
+       AUTH SCREEN
+  ============================= -->
+  <div id="view-auth">
+    <div class="auth-bg">
+      <div class="auth-card">
+
+        <div class="auth-logo">
+          <div class="auth-trophy">🏆</div>
+          <h1>Nations League</h1>
+          <p>Pronostiek</p>
+        </div>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login" onclick="switchTab('login')">Inloggen</button>
+          <button class="auth-tab" data-tab="register" onclick="switchTab('register')">Registreren</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" onsubmit="event.preventDefault(); handleLogin()">
+          <div class="input-group">
+            <i class="fas fa-envelope input-icon"></i>
+            <input type="email" id="login-email" placeholder="E-mail" required autocomplete="email">
+          </div>
+          <div class="input-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" id="login-password" placeholder="Wachtwoord" required autocomplete="current-password">
+          </div>
+          <button type="submit" id="login-btn" class="btn btn-primary btn-full">
+            <i class="fas fa-sign-in-alt"></i> Inloggen
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" style="display:none" onsubmit="event.preventDefault(); handleRegister()">
+          <div class="input-group">
+            <i class="fas fa-envelope input-icon"></i>
+            <input type="email" id="reg-email" placeholder="E-mail" required autocomplete="email">
+          </div>
+          <div class="input-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" id="reg-password" placeholder="Wachtwoord (min. 6 tekens)" required autocomplete="new-password" minlength="6">
+          </div>
+          <button type="button" id="register-btn" class="btn btn-primary btn-full" onclick="handleRegister()">
+            <i class="fas fa-user-plus"></i> Account aanmaken
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <small>UEFA Nations League 2026–27</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================
+       APP (authenticated)
+  ============================= -->
+  <div id="app" style="display:none">
+
+    <!-- Header -->
+    <header id="app-header">
+      <div class="header-left">
+        <span class="header-logo">🏆</span>
+        <span class="header-title">Nations League</span>
+      </div>
+      <div class="header-right">
+        <div id="header-user" style="display:flex;align-items:center;gap:8px;">
+          <span id="header-username" style="font-weight:600"></span>
+          <button id="signout-btn" style="display:none;padding:6px 8px;border-radius:6px;border:none;background:#eee;cursor:pointer;font-size:0.9rem" onclick="handleSignOut()">Afmelden</button>
+        </div>
+        <span id="header-points" class="header-points"></span>
+        <span id="header-rank" class="header-rank"></span>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+      <div class="loading-screen">
+        <div class="spinner"></div>
+        <p>Laden...</p>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav id="bottom-nav">
+      <button class="nav-btn active" id="nav-dashboard" onclick="navigateTo('dashboard')">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </button>
+      <button class="nav-btn" id="nav-matches" onclick="navigateTo('matches')">
+        <i class="fas fa-futbol"></i>
+        <span>Matches</span>
+      </button>
+      <button class="nav-btn" id="nav-leaderboard" onclick="navigateTo('leaderboard')">
+        <i class="fas fa-trophy"></i>
+        <span>Klassement</span>
+      </button>
+      <button class="nav-btn" id="nav-groups" onclick="navigateTo('groups')">
+        <i class="fas fa-users"></i>
+        <span>Vrienden</span>
+      </button>
+      <button class="nav-btn" id="nav-profile" onclick="navigateTo('profile')">
+        <i class="fas fa-user"></i>
+        <span>Profiel</span>
+      </button>
+      <button class="nav-btn" id="nav-admin" style="display:none" onclick="navigateTo('admin')">
+        <i class="fas fa-cog"></i>
+        <span>Beheer</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ============================
+       MODAL CONTAINER
+  ============================= -->
+  <div id="modal-container"></div>
+
+  <!-- ============================
+       TOAST CONTAINER
+  ============================= -->
+  <div id="toast-container"></div>
+
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Register service worker for PWA (if supported)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(reg => {
+          console.log('ServiceWorker registered', reg.scope);
+        }).catch(err => console.warn('SW registration failed', err));
+      });
+    }
+  </script>
+</body>
+</html>

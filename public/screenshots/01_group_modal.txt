@@ -1,0 +1,7 @@
+Screenshot: groeps-klassement modal
+
+De daadwerkelijke PNG is beschikbaar in de chat-sessie (preview). Als je het bestand lokaal wilt hebben, open de simulatiepagina:
+
+file:///C:/Users/piete/Nations-league-pronostiek/public/simulate.html
+
+en maak een screenshot met je browser of gebruik een tool om de data-URI uit de chat te decoderen naar PNG.

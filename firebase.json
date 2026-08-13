@@ -1,0 +1,21 @@
+{
+  "hosting": {
+    "site": "nations-league-4789b",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "scripts/**",
+      "**/*.py",
+      "**/*.exe",
+      "requirements.txt"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
