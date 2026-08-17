@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Simulatie — Nations League</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Minimal app shell matching index.html so app.js can attach -->
+  <div id="view-auth" style="display:none"></div>
+  <div id="app">
+    <header id="app-header"></header>
+    <main id="main-content"></main>
+    <nav id="bottom-nav">
+      <button class="nav-btn" id="nav-dashboard" onclick="navigateTo('dashboard')">Home</button>
+      <button class="nav-btn" id="nav-matches" onclick="navigateTo('matches')">Matches</button>
+      <button class="nav-btn" id="nav-leaderboard" onclick="navigateTo('leaderboard')">Klassement</button>
+      <button class="nav-btn" id="nav-groups" onclick="navigateTo('groups')">Vrienden</button>
+      <button class="nav-btn" id="nav-profile" onclick="navigateTo('profile')">Profiel</button>
+    </nav>
+  </div>
+  <div id="modal-container"></div>
+  <div id="toast-container"></div>
+
+  <script>
+    // seed localStorage with simulation data before app.js runs
+    (function(){
+      const fixtures = [
+        { id: 'sim1', league: 'Sim A', date: '2026-09-01 18:00', home: 'Alpha', away: 'Beta', homeFlag: '🏁', awayFlag: '🏴', played: true, homeScore: 2, awayScore: 1 },
+        { id: 'sim2', league: 'Sim A', date: '2026-09-02 20:00', home: 'Gamma', away: 'Delta', homeFlag: '🔵', awayFlag: '🔴', played: true, homeScore: 0, awayScore: 0 },
+        { id: 'sim3', league: 'Sim B', date: '2026-09-03 17:30', home: 'Epsilon', away: 'Zeta', homeFlag: '🟢', awayFlag: '🟡', played: false }
+      ];
+      localStorage.setItem('nl_fixtures', JSON.stringify(fixtures));
+      const groups = [{ id: 'g_sim_1', code: 'SIM1234', name: 'Simulatiegroep', ownerId: 'demo-user', members: [{ id: 'demo-user', name: 'SimUser' }, { id: 'user2', name: 'Rob' }] }];
+      localStorage.setItem('nl_groups', JSON.stringify(groups));
+      const memberPreds = { 'demo-user': {}, 'user2': {} };
+      memberPreds['demo-user']['sim1'] = { home: '2', away: '1' };
+      memberPreds['user2']['sim1'] = { home: '1', away: '2' };
+      memberPreds['demo-user']['sim2'] = { home: '0', away: '0' };
+      memberPreds['user2']['sim2'] = { home: '2', away: '1' };
+      memberPreds['demo-user']['sim3'] = { home: '3', away: '1' };
+      memberPreds['user2']['sim3'] = { home: '0', away: '2' };
+      localStorage.setItem('nl_member_predictions', JSON.stringify(memberPreds));
+      const myPreds = { 'sim1': { home: '2', away: '1', userId: 'demo-user' }, 'sim2': { home: '0', away: '0', userId: 'demo-user' } };
+      localStorage.setItem('nl_predictions', JSON.stringify(myPreds));
+      const rc = { 'g_sim_1': { 'sim1': { 'user2': ['demo-user'] } } };
+      localStorage.setItem('nl_redcards', JSON.stringify(rc));
+      // mark demo user
+      window.__simulate_demo_user = { id: 'demo-user', name: 'SimUser', email: 'sim@example.com' };
+    })();
+  </script>
+
+  <script src="app.js"></script>
+  <script>
+    // after app initializes, force demo user and navigate
+    window.addEventListener('load', () => {
+      try { window.currentUser = window.__simulate_demo_user; } catch (e) {}
+      try { updateHeaderUser(); } catch (e) {}
+      // open groups modal
+      try { navigateTo('groups'); setTimeout(()=>{
+        const cards = Array.from(document.querySelectorAll('.group-card'));
+        for (const card of cards) {
+          if (card.innerText && card.innerText.includes('Simulatiegroep')) {
+            const btns = card.querySelectorAll('button');
+            for (const b of btns) {
+              if (b.innerText && b.innerText.includes('Bekijk klassement')) { b.click(); break; }
+            }
+            break;
+          }
+        }
+      },250); } catch (e) {}
+    });
+  </script>
+</body>
+</html>

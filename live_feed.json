@@ -1,0 +1,212 @@
+{
+  "matches": [
+    {
+      "id": "2048009",
+      "homeTeam": "Andorra",
+      "awayTeam": "Malta",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-24 20:45"
+    },
+    {
+      "id": "2048002",
+      "homeTeam": "Portugal",
+      "awayTeam": "Wales",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-24 20:45"
+    },
+    {
+      "id": "2048003",
+      "homeTeam": "Netherlands",
+      "awayTeam": "Germany",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-24 20:45"
+    },
+    {
+      "id": "2048004",
+      "homeTeam": "Serbia",
+      "awayTeam": "Greece",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-24 20:45"
+    },
+    {
+      "id": "2048005",
+      "homeTeam": "Portugal",
+      "awayTeam": "Norway",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-24 20:45"
+    },
+    {
+      "id": "2048006",
+      "homeTeam": "Austria",
+      "awayTeam": "Israel",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-24 20:45"
+    },
+    {
+      "id": "2048007",
+      "homeTeam": "Kosovo",
+      "awayTeam": "Republic of Ireland",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-24 20:45"
+    },
+    {
+      "id": "2048008",
+      "homeTeam": "Liechtenstein",
+      "awayTeam": "Lithuania",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-24 20:45"
+    },
+    {
+      "id": "2048014",
+      "homeTeam": "Georgia",
+      "awayTeam": "Northern Ireland",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-25 18:00"
+    },
+    {
+      "id": "2048017",
+      "homeTeam": "Armenia",
+      "awayTeam": "Latvia",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048010",
+      "homeTeam": "Italy",
+      "awayTeam": "Belgium",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-25 20:45"
+    },
+    {
+      "id": "2048011",
+      "homeTeam": "Germany",
+      "awayTeam": "France",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-25 20:45"
+    },
+    {
+      "id": "2048012",
+      "homeTeam": "Hungary",
+      "awayTeam": "Ukraine",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048013",
+      "homeTeam": "Poland",
+      "awayTeam": "Bosnia",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048015",
+      "homeTeam": "Sweden",
+      "awayTeam": "Romania",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048016",
+      "homeTeam": "Montenegro",
+      "awayTeam": "Cyprus",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048027",
+      "homeTeam": "Scotland",
+      "awayTeam": "Slovenia",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048019",
+      "homeTeam": "Iceland",
+      "awayTeam": "Estonia",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048024",
+      "homeTeam": "Faroe Islands",
+      "awayTeam": "Kazakhstan",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048025",
+      "homeTeam": "Finland",
+      "awayTeam": "San Marino",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048026",
+      "homeTeam": "Bulgaria",
+      "awayTeam": "Luxembourg",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048018",
+      "homeTeam": "England",
+      "awayTeam": "Spain",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-26 20:45"
+    },
+    {
+      "id": "2048020",
+      "homeTeam": "Albania",
+      "awayTeam": "Belarus",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048021",
+      "homeTeam": "Slovakia",
+      "awayTeam": "Moldova",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": null
+    },
+    {
+      "id": "2048022",
+      "homeTeam": "North Macedonia",
+      "awayTeam": "Switzerland",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-26 20:45"
+    },
+    {
+      "id": "2048023",
+      "homeTeam": "Czechia",
+      "awayTeam": "Croatia",
+      "homeScore": null,
+      "awayScore": null,
+      "datetime": "2026-09-26 20:45"
+    }
+  ]
+}

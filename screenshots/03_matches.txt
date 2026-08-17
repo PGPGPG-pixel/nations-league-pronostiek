@@ -1,0 +1,5 @@
+Screenshot: wedstrijdenlijst
+
+De daadwerkelijke PNG is beschikbaar in de chat-sessie (preview). Open de simulatiepagina en maak een lokale screenshot of decodeer de data-URI uit de chat naar PNG.
+
+Simulatiepagina: file:///C:/Users/piete/Nations-league-pronostiek/public/simulate.html

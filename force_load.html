@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Force Load Fixtures — Nations League</title>
+  <style>
+    body{font-family:Segoe UI,Arial,sans-serif;padding:24px;background:#f7fbf7;color:#10203a}
+    .card{background:white;padding:18px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,0.08);max-width:720px}
+    button{margin:8px 6px 0;padding:10px 14px;border-radius:10px;border:0;font-weight:700}
+    .primary{background:#003399;color:white}
+    .secondary{background:#eee;color:#10203a}
+    pre{background:#f0f4ff;padding:12px;border-radius:8px;overflow:auto}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Force Load Fixtures</h2>
+    <p>Deze pagina haalt de server-versie van <code>/fixtures.json</code> op en schrijft die naar <code>localStorage.nl_fixtures</code>. Gebruik als je in de app maar een paar wedstrijden ziet.</p>
+    <div>
+      <button id="btn-load" class="primary">Laad fixtures en ga naar app</button>
+      <button id="btn-clear" class="secondary">Unregister SW & leeg caches</button>
+    </div>
+    <div id="status" style="margin-top:12px"></div>
+    <pre id="out" style="margin-top:12px;display:none"></pre>
+  </div>
+
+  <script>
+    const status = document.getElementById('status');
+    const out = document.getElementById('out');
+    document.getElementById('btn-load').addEventListener('click', async () => {
+      status.textContent = 'Ophalen fixtures...';
+      try {
+        const r = await fetch('/fixtures.json', { cache: 'no-store' });
+        if (!r.ok) throw new Error('Fetch failed: ' + r.status);
+        const data = await r.json();
+        localStorage.setItem('nl_fixtures', JSON.stringify(data));
+        status.textContent = 'Fixtures geladen: ' + data.length + ' items. Redirecting...';
+        out.style.display = 'block'; out.textContent = JSON.stringify(data, null, 2);
+        setTimeout(() => { location.href = '/'; }, 900);
+      } catch (e) {
+        status.textContent = 'Fout bij ophalen: ' + e.message;
+        out.style.display = 'block'; out.textContent = (e.stack || e.message || String(e));
+      }
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', async () => {
+      status.textContent = 'Unregistering service workers and clearing caches...';
+      try {
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(r => r.unregister()));
+        }
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+        status.textContent = 'SW unregistered and caches cleared. Reloading app...';
+        setTimeout(() => location.href = '/', 600);
+      } catch (e) {
+        status.textContent = 'Fout: ' + e.message;
+        out.style.display = 'block'; out.textContent = (e.stack || e.message || String(e));
+      }
+    });
+  </script>
+</body>
+</html>
