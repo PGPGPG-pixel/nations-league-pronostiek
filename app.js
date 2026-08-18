@@ -593,7 +593,7 @@ function resetFixtures() {
 function countryFlag(name) {
 	// prefer image flags via country codes; fallback to emoji map
 	const codes = {
-		'Portugal':'pt','Wales':null,'Netherlands':'nl','Germany':'de','Serbia':'rs','Greece':'gr','Norway':'no','Denmark':'dk','Austria':'at','Israel':'il','Kosovo':null,'Republic of Ireland':'ie','Liechtenstein':'li','Lithuania':'lt','Andorra':'ad','Malta':'mt','Italy':'it','Belgium':'be','Türkiye':'tr','Turkey':'tr','France':'fr','Georgia':'ge','Northern Ireland':null,'England':null,'Spain':'es','North Macedonia':'mk','Switzerland':'ch','Czechia':'cz','Croatia':'hr','Poland':'pl','Sweden':'se','Romania':'ro','Hungary':'hu','Ukraine':'ua','Scotland':null,'Slovenia':'si','Iceland':'is','Estonia':'ee','Finland':'fi','San Marino':'sm','Albania':'al','Belarus':'by','Slovakia':'sk','Moldova':'md','Bulgaria':'bg','Luxembourg':'lu','Faroe Islands':null,'Kazakhstan':'kz','Armenia':'am','Latvia':'lv','Montenegro':'me','Cyprus':'cy','Gibraltar':'gi','Azerbaijan':'az','Bosnia':'ba','Bosnia and Herzegovina':'ba'
+		'Portugal':'pt','Wales':'gb-wls','Netherlands':'nl','Germany':'de','Serbia':'rs','Greece':'gr','Norway':'no','Denmark':'dk','Austria':'at','Israel':'il','Kosovo':'xk','Republic of Ireland':'ie','Liechtenstein':'li','Lithuania':'lt','Andorra':'ad','Malta':'mt','Italy':'it','Belgium':'be','Türkiye':'tr','Turkey':'tr','France':'fr','Georgia':'ge','Northern Ireland':'gb-nir','England':'gb-eng','Spain':'es','North Macedonia':'mk','Switzerland':'ch','Czechia':'cz','Croatia':'hr','Poland':'pl','Sweden':'se','Romania':'ro','Hungary':'hu','Ukraine':'ua','Scotland':'gb-sct','Slovenia':'si','Iceland':'is','Estonia':'ee','Finland':'fi','San Marino':'sm','Albania':'al','Belarus':'by','Slovakia':'sk','Moldova':'md','Bulgaria':'bg','Luxembourg':'lu','Faroe Islands':'fo','Kazakhstan':'kz','Armenia':'am','Latvia':'lv','Montenegro':'me','Cyprus':'cy','Gibraltar':'gi','Azerbaijan':'az','Bosnia':'ba','Bosnia and Herzegovina':'ba'
 	};
 	const emoji = {
 		'Portugal':'🇵🇹','Wales':'🏴','Netherlands':'🇳🇱','Germany':'🇩🇪','Serbia':'🇷🇸','Greece':'🇬🇷','Norway':'🇳🇴','Denmark':'🇩🇰','Austria':'🇦🇹','Israel':'🇮🇱','Kosovo':'🇽🇰','Republic of Ireland':'🇮🇪','Liechtenstein':'🇱🇮','Lithuania':'🇱🇹','Andorra':'🇦🇩','Malta':'🇲🇹','Italy':'🇮🇹','Belgium':'🇧🇪','Türkiye':'🇹🇷','France':'🇫🇷','Georgia':'🇬🇪','Northern Ireland':'🇬🇧','England':'🏴','Spain':'🇪🇸','North Macedonia':'🇲🇰','Switzerland':'🇨🇭','Czechia':'🇨🇿','Croatia':'🇭🇷','Poland':'🇵🇱','Sweden':'🇸🇪','Romania':'🇷🇴','Hungary':'🇭🇺','Ukraine':'🇺🇦','Scotland':'🏴','Slovenia':'🇸🇮','Iceland':'🇮🇸','Estonia':'🇪🇪','Finland':'🇫🇮','San Marino':'🇸🇲','Albania':'🇦🇱','Belarus':'🇧🇾','Slovakia':'🇸🇰','Moldova':'🇲🇩','Bulgaria':'🇧🇬','Luxembourg':'🇱🇺','Faroe Islands':'🇫🇴','Kazakhstan':'🇰🇿','Armenia':'🇦🇲','Latvia':'🇱🇻','Montenegro':'🇲🇪','Cyprus':'🇨🇾','Gibraltar':'🇬🇮','Azerbaijan':'🇦🇿','Bosnia':'🇧🇦','Bosnia and Herzegovina':'🇧🇦'
@@ -657,7 +657,7 @@ function renderGroups(container) {
 		groups.forEach(g => {
 			const card = document.createElement('div');
 			card.className = 'group-card';
-			const isMember = g.members && g.members.find(m => m.id === currentUser.id);
+			const isMember = currentUser && g.members && g.members.find(m => m.id === currentUser.id);
 			card.innerHTML = `
 				<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${g.name}</strong><div style="font-size:0.85rem;color:var(--text-secondary)">Code: ${g.code}</div></div><div>${isMember ? '<span style="font-weight:700;color:var(--primary)">Lid</span>' : ''}</div></div>
 			`;
@@ -1017,14 +1017,23 @@ function _generateCode() {
 }
 
 function createGroup() {
+	if (!currentUser || !currentUser.id) {
+		// allow a quick demo/local owner when not logged in
+		const ownerName = prompt('Je naam (wordt groeps-eigenaar)') || 'Gast';
+		currentUser = { id: 'guest_' + Date.now().toString(36), name: ownerName, email: nameToEmail(ownerName) };
+		try { updateHeaderUser(); } catch (e) {}
+		showToast('Aangemeld als tijdelijk gebruiker ' + currentUser.name, 'success');
+	}
 	const name = prompt('Naam voor je vriendengroep? (bijv. "Kantoorpoule")');
 	if (!name) return showToast('Groepsnaam vereist', 'error');
 	const groups = JSON.parse(localStorage.getItem('nl_groups') || '[]');
 	const code = _generateCode();
 	const id = Date.now().toString(36);
-	const members = [{ id: currentUser.id, name: currentUser.name || 'Jij' }];
+	const ownerId = (currentUser && currentUser.id) ? currentUser.id : ('guest_' + Date.now().toString(36));
+	const ownerName = (currentUser && currentUser.name) ? currentUser.name : 'Jij';
+	const members = [{ id: ownerId, name: ownerName }];
 	const memberIds = members.map(m => m.id);
-	const group = { id, code, name, ownerId: currentUser.id, members };
+	const group = { id, code, name, ownerId: ownerId, members };
 	groups.push(group);
 	localStorage.setItem('nl_groups', JSON.stringify(groups));
 	// persist to Firestore if available so group survives reloads and other devices
@@ -1041,6 +1050,12 @@ function createGroup() {
 }
 
 function joinGroup() {
+	if (!currentUser || !currentUser.id) {
+		const guestName = prompt('Je naam (wordt je groepsnaam)') || 'Gast';
+		currentUser = { id: 'guest_' + Date.now().toString(36), name: guestName, email: nameToEmail(guestName) };
+		try { updateHeaderUser(); } catch (e) {}
+		showToast('Aangemeld als tijdelijk gebruiker ' + currentUser.name, 'success');
+	}
 	const code = prompt('Voer groepscode in om te joinen');
 	if (!code) return;
 	const name = prompt('Jouw naam in de groep (bijv. Piet)') || (currentUser.name || 'Speler');
