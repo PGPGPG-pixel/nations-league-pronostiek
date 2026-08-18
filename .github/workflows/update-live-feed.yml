@@ -17,34 +17,52 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-      - name: Generate live_feed.json
+        - name: Generate live_feed.json
         run: |
           python - <<'PY'
           import json, os
           src = 'public/fixtures.json'
           if not os.path.exists(src):
-              src = 'fixtures.json'
+            src = 'fixtures.json'
           try:
-              with open(src, 'r', encoding='utf-8') as f:
-                  fixtures = json.load(f)
+            with open(src, 'r', encoding='utf-8') as f:
+              fixtures = json.load(f)
           except Exception:
-              fixtures = []
+            fixtures = []
+
+          # mapping of display names to flagcdn codes (kept in sync with public/app.js)
+          codes = {
+            'Portugal':'pt','Wales':'gb-wls','Netherlands':'nl','Germany':'de','Serbia':'rs','Greece':'gr','Norway':'no','Denmark':'dk','Austria':'at','Israel':'il','Kosovo':'xk','Republic of Ireland':'ie','Liechtenstein':'li','Lithuania':'lt','Andorra':'ad','Malta':'mt','Italy':'it','Belgium':'be','Türkiye':'tr','Turkey':'tr','France':'fr','Georgia':'ge','Northern Ireland':'gb-nir','England':'gb-eng','Spain':'es','North Macedonia':'mk','Switzerland':'ch','Czechia':'cz','Croatia':'hr','Poland':'pl','Sweden':'se','Romania':'ro','Hungary':'hu','Ukraine':'ua','Scotland':'gb-sct','Slovenia':'si','Iceland':'is','Estonia':'ee','Finland':'fi','San Marino':'sm','Albania':'al','Belarus':'by','Slovakia':'sk','Moldova':'md','Bulgaria':'bg','Luxembourg':'lu','Faroe Islands':'fo','Kazakhstan':'kz','Armenia':'am','Latvia':'lv','Montenegro':'me','Cyprus':'cy','Gibraltar':'gi','Azerbaijan':'az','Bosnia':'ba','Bosnia and Herzegovina':'ba'
+          }
+
+          def flag_for(name):
+            if not name: return None
+            key = name.strip()
+            code = codes.get(key)
+            if code:
+              return f"https://flagcdn.com/w40/{code.lower()}.png"
+            return None
+
           feed = []
           for m in fixtures:
-              mid = m.get('id') or m.get('matchId') or (m.get('home','') + ' vs ' + m.get('away',''))
-              home = m.get('homeScore') if 'homeScore' in m else m.get('home_score') if 'home_score' in m else None
-              away = m.get('awayScore') if 'awayScore' in m else m.get('away_score') if 'away_score' in m else None
-              feed.append({
-                  'id': mid,
-                  'homeTeam': m.get('home'),
-                  'awayTeam': m.get('away'),
-                  'homeScore': home,
-                  'awayScore': away,
-                  'datetime': m.get('datetime') or m.get('date') or m.get('time')
-              })
+            mid = m.get('id') or m.get('matchId') or (m.get('home','') + ' vs ' + m.get('away',''))
+            home = m.get('homeScore') if 'homeScore' in m else m.get('home_score') if 'home_score' in m else None
+            away = m.get('awayScore') if 'awayScore' in m else m.get('away_score') if 'away_score' in m else None
+            hf = m.get('homeFlag') or flag_for(m.get('home'))
+            af = m.get('awayFlag') or flag_for(m.get('away'))
+            feed.append({
+              'id': mid,
+              'homeTeam': m.get('home'),
+              'awayTeam': m.get('away'),
+              'homeScore': home,
+              'awayScore': away,
+              'datetime': m.get('datetime') or m.get('date') or m.get('time'),
+              'homeFlag': hf,
+              'awayFlag': af
+            })
           os.makedirs('public', exist_ok=True)
           with open('public/live_feed.json', 'w', encoding='utf-8') as f:
-              json.dump({'matches': feed}, f, ensure_ascii=False, indent=2)
+            json.dump({'matches': feed}, f, ensure_ascii=False, indent=2)
           print('WROTE public/live_feed.json with', len(feed), 'matches')
           PY
       - name: Commit and push
