@@ -6,7 +6,9 @@
       "awayTeam": "Malta",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-24 20:45"
+      "datetime": "2026-09-24 20:45",
+      "homeFlag": "https://flagcdn.com/w40/ad.png",
+      "awayFlag": "https://flagcdn.com/w40/mt.png"
     },
     {
       "id": "2048002",
@@ -14,7 +16,9 @@
       "awayTeam": "Wales",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-24 20:45"
+      "datetime": "2026-09-24 20:45",
+      "homeFlag": "https://flagcdn.com/w40/pt.png",
+      "awayFlag": "https://flagcdn.com/w40/gb-wls.png"
     },
     {
       "id": "2048003",
@@ -22,7 +26,9 @@
       "awayTeam": "Germany",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-24 20:45"
+      "datetime": "2026-09-24 20:45",
+      "homeFlag": "https://flagcdn.com/w40/nl.png",
+      "awayFlag": "https://flagcdn.com/w40/de.png"
     },
     {
       "id": "2048004",
@@ -30,7 +36,9 @@
       "awayTeam": "Greece",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-24 20:45"
+      "datetime": "2026-09-24 20:45",
+      "homeFlag": "https://flagcdn.com/w40/rs.png",
+      "awayFlag": "https://flagcdn.com/w40/gr.png"
     },
     {
       "id": "2048005",
@@ -38,7 +46,9 @@
       "awayTeam": "Norway",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-24 20:45"
+      "datetime": "2026-09-24 20:45",
+      "homeFlag": "https://flagcdn.com/w40/pt.png",
+      "awayFlag": "https://flagcdn.com/w40/no.png"
     },
     {
       "id": "2048006",
@@ -46,7 +56,9 @@
       "awayTeam": "Israel",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-24 20:45"
+      "datetime": "2026-09-24 20:45",
+      "homeFlag": "https://flagcdn.com/w40/at.png",
+      "awayFlag": "https://flagcdn.com/w40/il.png"
     },
     {
       "id": "2048007",
@@ -54,7 +66,9 @@
       "awayTeam": "Republic of Ireland",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-24 20:45"
+      "datetime": "2026-09-24 20:45",
+      "homeFlag": "https://flagcdn.com/w40/xk.png",
+      "awayFlag": "https://flagcdn.com/w40/ie.png"
     },
     {
       "id": "2048008",
@@ -62,7 +76,9 @@
       "awayTeam": "Lithuania",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-24 20:45"
+      "datetime": "2026-09-24 20:45",
+      "homeFlag": "https://flagcdn.com/w40/li.png",
+      "awayFlag": "https://flagcdn.com/w40/lt.png"
     },
     {
       "id": "2048014",
@@ -70,7 +86,9 @@
       "awayTeam": "Northern Ireland",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-25 18:00"
+      "datetime": "2026-09-25 18:00",
+      "homeFlag": "https://flagcdn.com/w40/ge.png",
+      "awayFlag": "https://flagcdn.com/w40/gb-nir.png"
     },
     {
       "id": "2048017",
@@ -78,7 +96,9 @@
       "awayTeam": "Latvia",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/am.png",
+      "awayFlag": "https://flagcdn.com/w40/lv.png"
     },
     {
       "id": "2048010",
@@ -86,7 +106,9 @@
       "awayTeam": "Belgium",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-25 20:45"
+      "datetime": "2026-09-25 20:45",
+      "homeFlag": "https://flagcdn.com/w40/it.png",
+      "awayFlag": "https://flagcdn.com/w40/be.png"
     },
     {
       "id": "2048011",
@@ -94,7 +116,9 @@
       "awayTeam": "France",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-25 20:45"
+      "datetime": "2026-09-25 20:45",
+      "homeFlag": "https://flagcdn.com/w40/de.png",
+      "awayFlag": "https://flagcdn.com/w40/fr.png"
     },
     {
       "id": "2048012",
@@ -102,7 +126,9 @@
       "awayTeam": "Ukraine",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/hu.png",
+      "awayFlag": "https://flagcdn.com/w40/ua.png"
     },
     {
       "id": "2048013",
@@ -110,7 +136,9 @@
       "awayTeam": "Bosnia",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/pl.png",
+      "awayFlag": "https://flagcdn.com/w40/ba.png"
     },
     {
       "id": "2048015",
@@ -118,7 +146,9 @@
       "awayTeam": "Romania",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/se.png",
+      "awayFlag": "https://flagcdn.com/w40/ro.png"
     },
     {
       "id": "2048016",
@@ -126,7 +156,9 @@
       "awayTeam": "Cyprus",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/me.png",
+      "awayFlag": "https://flagcdn.com/w40/cy.png"
     },
     {
       "id": "2048027",
@@ -134,7 +166,9 @@
       "awayTeam": "Slovenia",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/gb-sct.png",
+      "awayFlag": "https://flagcdn.com/w40/si.png"
     },
     {
       "id": "2048019",
@@ -142,7 +176,9 @@
       "awayTeam": "Estonia",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/is.png",
+      "awayFlag": "https://flagcdn.com/w40/ee.png"
     },
     {
       "id": "2048024",
@@ -150,7 +186,9 @@
       "awayTeam": "Kazakhstan",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/fo.png",
+      "awayFlag": "https://flagcdn.com/w40/kz.png"
     },
     {
       "id": "2048025",
@@ -158,7 +196,9 @@
       "awayTeam": "San Marino",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/fi.png",
+      "awayFlag": "https://flagcdn.com/w40/sm.png"
     },
     {
       "id": "2048026",
@@ -166,7 +206,9 @@
       "awayTeam": "Luxembourg",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/bg.png",
+      "awayFlag": "https://flagcdn.com/w40/lu.png"
     },
     {
       "id": "2048018",
@@ -174,7 +216,9 @@
       "awayTeam": "Spain",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-26 20:45"
+      "datetime": "2026-09-26 20:45",
+      "homeFlag": "https://flagcdn.com/w40/gb-eng.png",
+      "awayFlag": "https://flagcdn.com/w40/es.png"
     },
     {
       "id": "2048020",
@@ -182,7 +226,9 @@
       "awayTeam": "Belarus",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/al.png",
+      "awayFlag": "https://flagcdn.com/w40/by.png"
     },
     {
       "id": "2048021",
@@ -190,7 +236,9 @@
       "awayTeam": "Moldova",
       "homeScore": null,
       "awayScore": null,
-      "datetime": null
+      "datetime": null,
+      "homeFlag": "https://flagcdn.com/w40/sk.png",
+      "awayFlag": "https://flagcdn.com/w40/md.png"
     },
     {
       "id": "2048022",
@@ -198,7 +246,9 @@
       "awayTeam": "Switzerland",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-26 20:45"
+      "datetime": "2026-09-26 20:45",
+      "homeFlag": "https://flagcdn.com/w40/mk.png",
+      "awayFlag": "https://flagcdn.com/w40/ch.png"
     },
     {
       "id": "2048023",
@@ -206,7 +256,9 @@
       "awayTeam": "Croatia",
       "homeScore": null,
       "awayScore": null,
-      "datetime": "2026-09-26 20:45"
+      "datetime": "2026-09-26 20:45",
+      "homeFlag": "https://flagcdn.com/w40/cz.png",
+      "awayFlag": "https://flagcdn.com/w40/hr.png"
     }
   ]
 }
