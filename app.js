@@ -1318,8 +1318,8 @@ function toggleRedCard(groupId, matchId, giverId, targetId) {
 	// Load fixtures into localStorage for immediate use
 	ensureFixturesLoaded();
 	try { updateHeaderUser(); } catch (e) {}
-	// If the app is not using Firebase auth, show the app immediately so visitors see matches
-	if (!useAuthFirebase) {
+	// If there's no signed-in user yet, show the app so anonymous visitors see matches
+	if (!currentUser) {
 		try { document.getElementById('view-auth').style.display = 'none'; document.getElementById('app').style.display = ''; } catch (e) {}
 		try { navigateTo('matches'); } catch (e) {}
 	}
