@@ -273,6 +273,60 @@ function getMatches() {
 	return mockMatches.map(m => ({ ...m, homeFlag: m.homeFlag || countryFlag(m.home), awayFlag: m.awayFlag || countryFlag(m.away) }));
 }
 
+// Localize country/team display names to Dutch
+function localizeCountry(name) {
+	if (!name) return '';
+	const map = {
+		'Netherlands':'Nederland',
+		'England':'Engeland',
+		'Scotland':'Schotland',
+		'Northern Ireland':'Noord-Ierland',
+		'Republic of Ireland':'Ierland',
+		'North Macedonia':'Noord-Macedonië',
+		'Czechia':'Tsjechië',
+		'Bosnia':'Bosnië',
+		'Faroe Islands':'Faeröer',
+		'San Marino':'San Marino',
+		'Turkey':'Turkije',
+		'Türkiye':'Turkije',
+		'Germany':'Duitsland',
+		'Spain':'Spanje',
+		'Portugal':'Portugal',
+		'Wales':'Wales',
+		'Italy':'Italië',
+		'Belgium':'België',
+		'Sweden':'Zweden',
+		'Romania':'Roemenië',
+		'Slovakia':'Slowakije',
+		'Moldova':'Moldavië',
+		'North Macedonia':'Noord-Macedonië'
+	};
+	return map[name] || name;
+}
+
+// If fixtures loaded from server have missing dates, fetch `fixtures.json` from public and update storage
+function ensureFixturesHaveDates() {
+	try {
+		const stored = JSON.parse(localStorage.getItem('nl_fixtures') || '[]');
+		const missing = stored.some(m => !m.datetime && !m.date);
+		if (!missing) return;
+	} catch (e) { /* continue to fetch */ }
+	// fetch public fixtures.json and merge
+	fetch('fixtures.json', {cache: 'no-store'}).then(r => {
+		if (!r.ok) return;
+		return r.json();
+	}).then(serverFixtures => {
+		if (!Array.isArray(serverFixtures)) return;
+		const local = JSON.parse(localStorage.getItem('nl_fixtures') || '[]');
+		const map = {};
+		local.forEach(m => { if (m && m.id) map[m.id] = m; });
+		serverFixtures.forEach(m => { if (m && m.id) map[m.id] = { ...map[m.id], ...m }; });
+		const merged = Object.values(map).length ? Object.values(map) : serverFixtures;
+		localStorage.setItem('nl_fixtures', JSON.stringify(merged));
+		try { navigateTo('matches'); } catch (e) {}
+	}).catch(() => {});
+}
+
 	function formatMatchDate(dateStr) {
 		if (!dateStr) return 'Datum onbekend';
 		try {
@@ -309,19 +363,22 @@ function renderDashboard(container) {
 	upcoming.innerHTML = '<h2>Komende wedstrijden</h2>';
 
 	const matches = getMatches();
+	// Ensure fixtures have dates loaded asynchronously if missing
+	ensureFixturesHaveDates();
+
 	for (const m of matches) {
 		const card = document.createElement('div');
 		card.className = 'match-card ' + (predictions[m.id] ? 'predicted' : '');
 		const meta = document.createElement('div');
 		meta.className = 'match-meta';
-		meta.innerHTML = `<div class="match-league">${m.league}</div><div class="match-date">${formatMatchDate(m.date)}</div>`;
+		meta.innerHTML = `<div class="match-league">${m.league}</div><div class="match-date">${formatMatchDate(m.date || m.datetime)}</div>`;
 
 		const content = document.createElement('div');
 		content.className = 'match-content';
 		content.innerHTML = `
-			<div class="team home-team"><div class="team-flag">${m.homeFlag}</div><div class="team-name">${m.home}</div></div>
+			<div class="team home-team"><div class="team-flag">${m.homeFlag}</div><div class="team-name">${localizeCountry(m.home)}</div></div>
 			<div class="match-center"><div class="vs-text">VS</div><div class="pred-indicator">${predictions[m.id] ? `<span class="pred-score-sm">${predictions[m.id].home}-${predictions[m.id].away}</span>` : '<span class="pred-score-sm">Voorspel</span>'}</div></div>
-			<div class="team away-team"><div class="team-name">${m.away}</div><div class="team-flag">${m.awayFlag}</div></div>
+			<div class="team away-team"><div class="team-name">${localizeCountry(m.away)}</div><div class="team-flag">${m.awayFlag}</div></div>
 		`;
 
 		card.appendChild(meta);
@@ -340,15 +397,17 @@ function renderMatches(container) {
 	view.innerHTML = '<h2>Alle wedstrijden</h2>';
 
 	const matches = getMatches();
+	// ensure dates present when rendering; will fetch from public/fixtures.json if needed
+	ensureFixturesHaveDates();
 	matches.forEach(m => {
 		const card = document.createElement('div');
 		card.className = 'match-card ' + (predictions[m.id] ? 'predicted' : '');
 		card.innerHTML = `
-			<div class="match-meta"><div class="match-league">${m.league}</div><div class="match-date">${formatMatchDate(m.date)}</div></div>
+			<div class="match-meta"><div class="match-league">${m.league}</div><div class="match-date">${formatMatchDate(m.date || m.datetime)}</div></div>
 			<div class="match-content">
-				<div class="team home-team"><div class="team-flag">${m.homeFlag}</div><div class="team-name">${m.home}</div></div>
+				<div class="team home-team"><div class="team-flag">${m.homeFlag}</div><div class="team-name">${localizeCountry(m.home)}</div></div>
 				<div class="match-center"><div class="score-value">${predictions[m.id] ? predictions[m.id].home + ' - ' + predictions[m.id].away : '—'}</div><div class="vs-text">VS</div></div>
-				<div class="team away-team"><div class="team-name">${m.away}</div><div class="team-flag">${m.awayFlag}</div></div>
+				<div class="team away-team"><div class="team-name">${localizeCountry(m.away)}</div><div class="team-flag">${m.awayFlag}</div></div>
 			</div>
 		`;
 		card.onclick = () => openPredictionModal(m);

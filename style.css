@@ -824,8 +824,8 @@ a { color: inherit; text-decoration: none; }
   /* Push main content below the smaller header */
   #main-content { top: var(--header-height); }
 
-  /* Auth screen: avoid centering behind fixed header */
-  #view-auth { align-items: flex-start; padding-top: calc(var(--header-height) + 10px); }
+  /* Auth screen: keep centered on small screens to avoid layout overflow */
+  #view-auth { align-items: center; padding-top: 0; }
   .auth-bg { padding: 12px 12px 20px; }
   .auth-card { max-width: 360px; padding: 20px 16px 20px; border-radius: 16px; }
   .auth-logo h1 { font-size: 1.45rem; }
