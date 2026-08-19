@@ -85,12 +85,12 @@ function setupFirebaseRealtime() {
 			const modalHtml = `
 				<div class="modal-overlay" id="pred-modal">
 					<div class="modal-content">
-						<div class="modal-header"><h3>Voorspel: ${match.home} — ${match.away}</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+						<div class="modal-header"><h3>Voorspel: ${localizeCountry(match.home)} — ${localizeCountry(match.away)}</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
 						<div class="modal-body">
 							<div class="modal-match">
-								<div class="modal-team"><div class="modal-flag">${match.homeFlag}</div><div class="modal-team-name">${match.home}</div></div>
+								<div class="modal-team"><div class="modal-flag">${match.homeFlag}</div><div class="modal-team-name">${localizeCountry(match.home)}</div></div>
 								<div class="modal-score-input"><input type="number" id="pred-home" class="score-input-lg" value="${predictions[match.id] ? predictions[match.id].home : ''}" min="0"> <div class="dash">-</div> <input type="number" id="pred-away" class="score-input-lg" value="${predictions[match.id] ? predictions[match.id].away : ''}" min="0"></div>
-								<div class="modal-team"><div class="modal-flag">${match.awayFlag}</div><div class="modal-team-name">${match.away}</div></div>
+								<div class="modal-team"><div class="modal-flag">${match.awayFlag}</div><div class="modal-team-name">${localizeCountry(match.away)}</div></div>
 							</div>
 							<div class="scoring-info"><div class="scoring-item"><strong>3</strong>Exact</div><div class="scoring-item"><strong>1</strong>Uitkomst</div><div class="scoring-item"><strong>0</strong>Fout</div></div>
 						</div>
@@ -440,8 +440,8 @@ function openResultModal(match) {
 			<div class="modal-content">
 				<div class="modal-header"><h3>Resultaat invoeren: ${match.home} — ${match.away}</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
 				<div class="modal-body">
-					<div style="display:flex;gap:10px;align-items:center"><div>${match.home}</div><input id="res-home-${match.id}" type="number" min="0" style="width:80px;padding:6px;border-radius:6px;border:1px solid var(--border)" value="${match.homeScore || ''}"></div>
-					<div style="margin:8px 0;display:flex;gap:10px;align-items:center"><div>${match.away}</div><input id="res-away-${match.id}" type="number" min="0" style="width:80px;padding:6px;border-radius:6px;border:1px solid var(--border)" value="${match.awayScore || ''}"></div>
+							<div style="display:flex;gap:10px;align-items:center"><div>${localizeCountry(match.home)}</div><input id="res-home-${match.id}" type="number" min="0" style="width:80px;padding:6px;border-radius:6px;border:1px solid var(--border)" value="${match.homeScore || ''}"></div>
+							<div style="margin:8px 0;display:flex;gap:10px;align-items:center"><div>${localizeCountry(match.away)}</div><input id="res-away-${match.id}" type="number" min="0" style="width:80px;padding:6px;border-radius:6px;border:1px solid var(--border)" value="${match.awayScore || ''}"></div>
 				</div>
 				<div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Annuleer</button><button class="btn btn-primary" onclick="saveMatchResultFromModal('${match.id}')">Opslaan resultaat</button></div>
 			</div>
@@ -989,12 +989,12 @@ function openPredictionModal(match) {
 	const modalHtml = `
 		<div class="modal-overlay" id="pred-modal">
 			<div class="modal-content">
-				<div class="modal-header"><h3>Voorspel: ${match.home} — ${match.away}</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+				<div class="modal-header"><h3>Voorspel: ${localizeCountry(match.home)} — ${localizeCountry(match.away)}</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
 				<div class="modal-body">
 					<div class="modal-match">
-						<div class="modal-team"><div class="modal-flag">${match.homeFlag}</div><div class="modal-team-name">${match.home}</div></div>
+						<div class="modal-team"><div class="modal-flag">${match.homeFlag}</div><div class="modal-team-name">${localizeCountry(match.home)}</div></div>
 						<div class="modal-score-input"><input type="number" id="pred-home" class="score-input-lg" value="${predictions[match.id] ? predictions[match.id].home : ''}" min="0"> <div class="dash">-</div> <input type="number" id="pred-away" class="score-input-lg" value="${predictions[match.id] ? predictions[match.id].away : ''}" min="0"></div>
-						<div class="modal-team"><div class="modal-flag">${match.awayFlag}</div><div class="modal-team-name">${match.away}</div></div>
+						<div class="modal-team"><div class="modal-flag">${match.awayFlag}</div><div class="modal-team-name">${localizeCountry(match.away)}</div></div>
 					</div>
 					<div class="scoring-info"><div class="scoring-item"><strong>3</strong>Exact</div><div class="scoring-item"><strong>1</strong>Uitkomst</div><div class="scoring-item"><strong>0</strong>Fout</div></div>
 				</div>
@@ -1194,7 +1194,7 @@ function renderGroupLeaderboard(container, group) {
 	table.style.borderCollapse = 'collapse';
 	const thead = document.createElement('thead');
 	let headRow = '<tr><th>Speler</th>';
-	for (const m of matches) headRow += `<th style="min-width:80px">${m.home}<br/>vs<br/>${m.away}</th>`;
+	for (const m of matches) headRow += `<th style="min-width:80px">${localizeCountry(m.home)}<br/>vs<br/>${localizeCountry(m.away)}</th>`;
 	headRow += '<th>Totaal</th></tr>';
 	thead.innerHTML = headRow;
 	table.appendChild(thead);
