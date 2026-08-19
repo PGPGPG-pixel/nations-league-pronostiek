@@ -1315,10 +1315,14 @@ function toggleRedCard(groupId, matchId, giverId, targetId) {
 (function init() {
 	// default auth tab
 	switchTab('login');
-	// nav buttons already have onclick attrs in HTML; ensure dashboard is shown when signed in in future
-	// Try load fixtures.json from server into localStorage for immediate use
+	// Load fixtures into localStorage for immediate use
 	ensureFixturesLoaded();
 	try { updateHeaderUser(); } catch (e) {}
+	// If the app is not using Firebase auth, show the app immediately so visitors see matches
+	if (!useAuthFirebase) {
+		try { document.getElementById('view-auth').style.display = 'none'; document.getElementById('app').style.display = ''; } catch (e) {}
+		try { navigateTo('matches'); } catch (e) {}
+	}
 })();
 
 // Prompt user for nickname if none set
@@ -1370,7 +1374,8 @@ async function saveProfileFromModal(uid) {
 async function loadFixturesFromServer() {
 	try {
 		// Force network (avoid cached SW responses) to get latest fixtures
-		const resp = await fetch('/fixtures.json', { cache: 'no-store' });
+		// Use relative path so it works on GitHub Pages under a repo subpath
+		const resp = await fetch('fixtures.json', { cache: 'no-store' });
 		if (!resp.ok) return;
 		const data = await resp.json();
 		if (Array.isArray(data) && data.length) {
