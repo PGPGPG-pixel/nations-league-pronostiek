@@ -1,12 +1,12 @@
 // Bump CACHE_NAME when releasing updated public assets so clients refresh cache.
 const CACHE_NAME = 'nl-pronostiek-v2';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/firebase-config.js',
-  '/fixtures.json'
+  './',
+  './index.html',
+  './style.css',
+  './app.js',
+  './firebase-config.js',
+  './fixtures.json'
 ];
 
 self.addEventListener('install', event => {

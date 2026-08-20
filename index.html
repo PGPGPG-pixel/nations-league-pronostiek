@@ -148,7 +148,8 @@
     // Register service worker for PWA (if supported)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').then(reg => {
+        // register service worker using repo subpath so it resolves on GitHub Pages
+        navigator.serviceWorker.register('/nations-league-pronostiek/sw.js').then(reg => {
           console.log('ServiceWorker registered', reg.scope);
         }).catch(err => console.warn('SW registration failed', err));
       });
