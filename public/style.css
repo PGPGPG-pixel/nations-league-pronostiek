@@ -915,7 +915,11 @@ a { color: inherit; text-decoration: none; }
    ========================================== */
 .modal-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* leave space at the bottom so the bottom nav remains clickable */
+  bottom: var(--nav-height);
   background: rgba(0, 0, 50, 0.5);
   display: flex;
   align-items: flex-end;
