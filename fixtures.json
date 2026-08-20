@@ -2,63 +2,63 @@
   {
     "id": "2048009",
     "league": "",
-    "date": "2026-09-24 20:45",
+    "date": "",
     "home": "Andorra",
     "away": "Malta"
   },
   {
     "id": "2048002",
     "league": "",
-    "date": "2026-09-24 20:45",
+    "date": "",
     "home": "Portugal",
     "away": "Wales"
   },
   {
     "id": "2048003",
     "league": "",
-    "date": "2026-09-24 20:45",
+    "date": "",
     "home": "Netherlands",
     "away": "Germany"
   },
   {
     "id": "2048004",
     "league": "",
-    "date": "2026-09-24 20:45",
+    "date": "",
     "home": "Serbia",
     "away": "Greece"
   },
   {
     "id": "2048005",
     "league": "",
-    "date": "2026-09-24 20:45",
+    "date": "",
     "home": "Portugal",
     "away": "Norway"
   },
   {
     "id": "2048006",
     "league": "",
-    "date": "2026-09-24 20:45",
+    "date": "",
     "home": "Austria",
     "away": "Israel"
   },
   {
     "id": "2048007",
     "league": "",
-    "date": "2026-09-24 20:45",
+    "date": "",
     "home": "Kosovo",
     "away": "Republic of Ireland"
   },
   {
     "id": "2048008",
     "league": "",
-    "date": "2026-09-24 20:45",
+    "date": "",
     "home": "Liechtenstein",
     "away": "Lithuania"
   },
   {
     "id": "2048014",
     "league": "",
-    "date": "2026-09-25 18:00",
+    "date": "",
     "home": "Georgia",
     "away": "Northern Ireland"
   },
@@ -72,14 +72,14 @@
   {
     "id": "2048010",
     "league": "",
-    "date": "2026-09-25 20:45",
+    "date": "",
     "home": "Italy",
     "away": "Belgium"
   },
   {
     "id": "2048011",
     "league": "",
-    "date": "2026-09-25 20:45",
+    "date": "",
     "home": "Germany",
     "away": "France"
   },
@@ -110,75 +110,5 @@
     "date": "",
     "home": "Montenegro",
     "away": "Cyprus"
-  },
-  {
-    "id": "2048027",
-    "league": "",
-    "date": "",
-    "home": "Scotland",
-    "away": "Slovenia"
-  },
-  {
-    "id": "2048019",
-    "league": "",
-    "date": "",
-    "home": "Iceland",
-    "away": "Estonia"
-  },
-  {
-    "id": "2048024",
-    "league": "",
-    "date": "",
-    "home": "Faroe Islands",
-    "away": "Kazakhstan"
-  },
-  {
-    "id": "2048025",
-    "league": "",
-    "date": "",
-    "home": "Finland",
-    "away": "San Marino"
-  },
-  {
-    "id": "2048026",
-    "league": "",
-    "date": "",
-    "home": "Bulgaria",
-    "away": "Luxembourg"
-  },
-  {
-    "id": "2048018",
-    "league": "",
-    "date": "2026-09-26 20:45",
-    "home": "England",
-    "away": "Spain"
-  },
-  {
-    "id": "2048020",
-    "league": "",
-    "date": "",
-    "home": "Albania",
-    "away": "Belarus"
-  },
-  {
-    "id": "2048021",
-    "league": "",
-    "date": "",
-    "home": "Slovakia",
-    "away": "Moldova"
-  },
-  {
-    "id": "2048022",
-    "league": "",
-    "date": "2026-09-26 20:45",
-    "home": "North Macedonia",
-    "away": "Switzerland"
-  },
-  {
-    "id": "2048023",
-    "league": "",
-    "date": "2026-09-26 20:45",
-    "home": "Czechia",
-    "away": "Croatia"
   }
 ]
