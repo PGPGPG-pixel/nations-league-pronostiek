@@ -44,7 +44,7 @@ function setupFirebaseRealtime() {
 						predictions[data.matchId] = { home: String(data.home), away: String(data.away), userId: data.userId };
 					});
 					localStorage.setItem('nl_predictions', JSON.stringify(predictions));
-					try { navigateTo('dashboard'); } catch (e) {}
+					// do NOT force navigation here — just silently update data in the background
 				});
 
 			// listen for groups where this user is a member
@@ -78,52 +78,17 @@ function setupFirebaseRealtime() {
 			return d;
 		}
 
-		// Modal helpers
-		function openPredictionModal(match) {
-			// store active match for savePrediction to validate cutoff
-			window._activeMatchForPrediction = match;
-			const modalHtml = `
-				<div class="modal-overlay" id="pred-modal">
-					<div class="modal-content">
-						<div class="modal-header"><h3>Voorspel: ${localizeCountry(match.home)} — ${localizeCountry(match.away)}</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
-						<div class="modal-body">
-							<div class="modal-match">
-								<div class="modal-team"><div class="modal-flag">${match.homeFlag}</div><div class="modal-team-name">${localizeCountry(match.home)}</div></div>
-								<div class="modal-score-input"><input type="number" id="pred-home" class="score-input-lg" value="${predictions[match.id] ? predictions[match.id].home : ''}" min="0"> <div class="dash">-</div> <input type="number" id="pred-away" class="score-input-lg" value="${predictions[match.id] ? predictions[match.id].away : ''}" min="0"></div>
-								<div class="modal-team"><div class="modal-flag">${match.awayFlag}</div><div class="modal-team-name">${localizeCountry(match.away)}</div></div>
-							</div>
-							<div class="scoring-info"><div class="scoring-item"><strong>3</strong>Exact</div><div class="scoring-item"><strong>1</strong>Uitkomst</div><div class="scoring-item"><strong>0</strong>Fout</div></div>
-						</div>
-						<div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Annuleer</button><button class="btn btn-primary" onclick="savePrediction('${match.id}')">Opslaan</button></div>
-					</div>
-				</div>
-			`;
-			document.getElementById('modal-container').innerHTML = modalHtml;
-		}
 		// update header UI when auth state changes
 		try { updateHeaderUser(); } catch (e) {}
 	});
 }
 
 // Expose key functions to `window` so inline `onclick` handlers work on the deployed site
-try {
-	window.navigateTo = navigateTo;
-	window.switchTab = switchTab;
-	window.handleLogin = handleLogin;
-	window.handleRegister = handleRegister;
-	window.openPredictionModal = openPredictionModal;
-	window.savePrediction = savePrediction;
-	window.closeModal = closeModal;
-	window.createGroup = createGroup;
-	window.joinGroup = joinGroup;
-	window.importFixturesFromTextarea = importFixturesFromTextarea;
-	window.loadFixturesFromServer = loadFixturesFromServer;
-	window.handleSignOut = handleSignOut;
-	window.openResultModal = openResultModal;
-	window.saveMatchResultFromModal = saveMatchResultFromModal;
-	window.startLiveFromAdmin = typeof startLiveFromAdmin === 'function' ? startLiveFromAdmin : (() => {});
-	window.stopLiveTracking = typeof stopLiveTracking === 'function' ? stopLiveTracking : (() => {});
-} catch (e) { console.warn('Failed to expose globals on window', e); }
+// Each assignment is wrapped individually so one failure never blocks the others
+const _toExpose = { navigateTo, switchTab, handleLogin, handleRegister, savePrediction, closeModal, createGroup, joinGroup, importFixturesFromTextarea, loadFixturesFromServer, handleSignOut, openResultModal, saveMatchResultFromModal, startLiveFromAdmin, stopLiveTracking, resetFixtures, openProfileEditor };
+for (const [k, v] of Object.entries(_toExpose)) { try { window[k] = v; } catch (e) { console.warn('Failed to expose', k, e); } }
+// openPredictionModal is defined at module level and exposed below
+window.openPredictionModal = openPredictionModal;
 
 // Initialize firebase realtime wiring if possible
 setupFirebaseRealtime();
@@ -144,7 +109,7 @@ if (useFirebase) {
 			});
 			try {
 				localStorage.setItem('nl_fixtures', JSON.stringify(fixtures));
-				try { navigateTo('matches'); } catch (e) {}
+				// do NOT force navigation here — just silently update data in the background
 			} catch (e) { console.warn('Failed to sync matches snapshot to localStorage', e); }
 		});
 	} catch (e) { console.warn('Failed to attach realtime listener for matches', e); }
@@ -252,14 +217,18 @@ function navigateTo(view) {
 	if (btn) btn.classList.add('active');
 
 	const main = document.getElementById('main-content');
+	if (!main) return;
 	main.innerHTML = '';
 
-	if (view === 'dashboard') renderDashboard(main);
-	if (view === 'matches') renderMatches(main);
-	if (view === 'leaderboard') renderLeaderboard(main);
-	if (view === 'groups') renderGroups(main);
-	if (view === 'profile') renderProfile(main);
-	if (view === 'admin') renderAdmin(main);
+	switch (view) {
+		case 'dashboard': try { renderDashboard(main); } catch (e) { console.warn('renderDashboard', e); main.innerHTML = '<div style="padding:20px"><h2>Dashboard</h2><p>Fout bij laden.</p></div>'; } break;
+		case 'matches': try { renderMatches(main); } catch (e) { console.warn('renderMatches', e); main.innerHTML = '<div style="padding:20px"><h2>Wedstrijden</h2><p>Fout bij laden.</p></div>'; } break;
+		case 'leaderboard': try { renderLeaderboard(main); } catch (e) { console.warn('renderLeaderboard', e); main.innerHTML = '<div style="padding:20px"><h2>Klassement</h2><p>Fout bij laden.</p></div>'; } break;
+		case 'groups': try { renderGroups(main); } catch (e) { console.warn('renderGroups', e); main.innerHTML = '<div style="padding:20px"><h2>Groepen</h2><p>Fout bij laden.</p></div>'; } break;
+		case 'profile': try { renderProfile(main); } catch (e) { console.warn('renderProfile', e); main.innerHTML = '<div style="padding:20px"><h2>Profiel</h2><p>Fout bij laden.</p></div>'; } break;
+		case 'admin': try { renderAdmin(main); } catch (e) { console.warn('renderAdmin', e); main.innerHTML = '<div style="padding:20px"><h2>Beheer</h2><p>Fout bij laden.</p></div>'; } break;
+		default: main.innerHTML = '<div style="padding:20px"><h2>' + view + '</h2></div>';
+	}
 }
 
 // Fixtures (sourced from UEFA fixtures/results pages — sample matchday 24-26 Sep 2026)
@@ -343,7 +312,7 @@ function ensureFixturesHaveDates() {
 		serverFixtures.forEach(m => { if (m && m.id) map[m.id] = { ...map[m.id], ...m }; });
 		const merged = Object.values(map).length ? Object.values(map) : serverFixtures;
 		localStorage.setItem('nl_fixtures', JSON.stringify(merged));
-		try { navigateTo('matches'); } catch (e) {}
+		// do NOT force navigation here — just silently update data in the background
 	}).catch(() => {});
 }
 
@@ -703,7 +672,7 @@ function renderLeaderboard(container) {
 
 	rows.forEach((r, i) => {
 		const row = document.createElement('div');
-		row.className = 'leaderboard-row ' + (r.name === (currentUser.name || 'Jij') ? 'current-user' : '');
+		row.className = 'leaderboard-row ' + (r.name === ((currentUser && currentUser.name) || 'Jij') ? 'current-user' : '');
 		row.innerHTML = `
 			<div class="rank-badge">${i+1}</div>
 			<div class="player-info"><div class="player-name">${r.name}</div><div class="player-stats">${r.points} pts</div></div>
@@ -774,9 +743,9 @@ function renderProfile(container) {
 	view.className = 'profile-view';
 	view.innerHTML = `
 		<div class="profile-header">
-			<div class="profile-avatar">${(currentUser.name || 'U').charAt(0).toUpperCase()}</div>
-			<h2>${currentUser.name || 'Demo'}</h2>
-			<p>${currentUser.email || ''}</p>
+			<div class="profile-avatar">${(((currentUser && currentUser.name) || 'U').charAt(0)).toUpperCase()}</div>
+			<h2>${(currentUser && currentUser.name) || 'Demo'}</h2>
+			<p>${(currentUser && currentUser.email) || ''}</p>
 		</div>
 		<div class="profile-stats">
 			<div class="stat-row"><div class="stat-name">Voorspellingen</div><div class="stat-val">${countPredictions()}</div></div>
@@ -1400,8 +1369,6 @@ async function loadFixturesFromServer() {
 		const data = await resp.json();
 		if (Array.isArray(data) && data.length) {
 				localStorage.setItem('nl_fixtures', JSON.stringify(data));
-				// refresh matches view so imported fixtures appear immediately
-				try { navigateTo('matches'); } catch (e) {}
 				showToast('Fixtures automatisch geladen (' + data.length + ')', 'success');
 		}
 	} catch (e) {
