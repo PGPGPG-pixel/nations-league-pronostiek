@@ -253,14 +253,36 @@ function navigateTo(view) {
   if (btn) btn.classList.add('active');
 
   const main = document.getElementById('main-content');
+  if (!main) return;
   main.innerHTML = '';
 
-  if (view === 'dashboard') renderDashboard(main);
-  if (view === 'matches') renderMatches(main);
-  if (view === 'leaderboard') renderLeaderboard(main);
-  if (view === 'groups') renderGroups(main);
-  if (view === 'profile') renderProfile(main);
-  if (view === 'admin') renderAdmin(main);
+  try {
+    switch (view) {
+      case 'dashboard':
+        try { renderDashboard(main); } catch (e) { console.warn('renderDashboard failed', e); main.innerHTML = '<h2>Dashboard tijdelijk niet beschikbaar</h2>'; }
+        break;
+      case 'matches':
+        try { renderMatches(main); } catch (e) { console.warn('renderMatches failed', e); main.innerHTML = '<h2>Wedstrijden tijdelijk niet beschikbaar</h2>'; }
+        break;
+      case 'leaderboard':
+        try { renderLeaderboard(main); } catch (e) { console.warn('renderLeaderboard failed', e); main.innerHTML = '<h2>Klassement tijdelijk niet beschikbaar</h2>'; }
+        break;
+      case 'groups':
+        try { renderGroups(main); } catch (e) { console.warn('renderGroups failed', e); main.innerHTML = '<h2>Groepen tijdelijk niet beschikbaar</h2>'; }
+        break;
+      case 'profile':
+        try { renderProfile(main); } catch (e) { console.warn('renderProfile failed', e); main.innerHTML = '<h2>Profiel tijdelijk niet beschikbaar</h2>'; }
+        break;
+      case 'admin':
+        try { renderAdmin(main); } catch (e) { console.warn('renderAdmin failed', e); main.innerHTML = '<h2>Beheer tijdelijk niet beschikbaar</h2>'; }
+        break;
+      default:
+        main.innerHTML = `<h2>${view}</h2>`;
+    }
+  } catch (e) {
+    console.warn('navigateTo unexpected error', e);
+    main.innerHTML = '<h2>Pagina tijdelijk niet beschikbaar</h2>';
+  }
 }
 
 // Fixtures (sourced from UEFA fixtures/results pages — sample matchday 24-26 Sep 2026)
