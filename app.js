@@ -53,7 +53,7 @@ function setupFirebaseRealtime() {
       } catch (e) { console.warn('Failed to load user metadata', e); }
       // show app UI once signed in
       try { onAuthSuccess(); } catch (e) {}
-      try { showToast('Aangemeld als ' + (currentUser.name || 'gast'), 'success'); } catch (e) {}
+      try { showToast('Aangemeld als ' + ((currentUser && currentUser.name) || 'gast'), 'success'); } catch (e) {}
       // load user's predictions from Firestore
       db.collection('predictions').where('userId', '==', currentUser.id)
         .onSnapshot(snap => {
@@ -706,7 +706,7 @@ function renderLeaderboard(container) {
 
   const list = view.querySelector('.leaderboard-list');
   const rows = [
-    { name: currentUser.name || 'Jij', points: calculatePoints() },
+    { name: ((currentUser && currentUser.name) || 'Jij'), points: calculatePoints() },
     { name: 'Jan', points: Math.max(0, calculatePoints() - 1) },
     { name: 'Lisa', points: Math.max(0, calculatePoints() - 2) }
   ];
@@ -784,9 +784,9 @@ function renderProfile(container) {
   view.className = 'profile-view';
   view.innerHTML = `
     <div class="profile-header">
-      <div class="profile-avatar">${(currentUser.name || 'U').charAt(0).toUpperCase()}</div>
-      <h2>${currentUser.name || 'Demo'}</h2>
-      <p>${currentUser.email || ''}</p>
+      <div class="profile-avatar">${(((currentUser && currentUser.name) || 'U').charAt(0)).toUpperCase()}</div>
+      <h2>${(currentUser && currentUser.name) || 'Demo'}</h2>
+      <p>${(currentUser && currentUser.email) || ''}</p>
     </div>
     <div class="profile-stats">
       <div class="stat-row"><div class="stat-name">Voorspellingen</div><div class="stat-val">${countPredictions()}</div></div>
