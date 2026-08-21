@@ -16,6 +16,13 @@ function setupFirebaseRealtime() {
 
 	auth.onAuthStateChanged(async (user) => {
 		if (user) {
+			// Sign out if user has no active session and didn't choose to stay logged in
+			const hasSession = sessionStorage.getItem('nl_session_active') === '1';
+			const stayLoggedIn = localStorage.getItem('nl_stay_logged_in') === '1';
+			if (!hasSession && !stayLoggedIn) {
+				auth.signOut();
+				return;
+			}
 			currentUser = { id: user.uid, name: user.displayName || (user.email ? user.email.split('@')[0] : (user.isAnonymous ? 'Gast' : 'User')), email: user.email || '' };
 			// fetch user metadata (isAdmin) from users collection if present
 			try {
@@ -126,14 +133,18 @@ function handleLogin() {
 	const email = document.getElementById('login-email').value.trim();
 	const password = document.getElementById('login-password').value;
 	if (!email) return showToast('Vul je e-mail in', 'error');
-	if (useAuthFirebase) {
-		auth.signInWithEmailAndPassword(email, password)
-			.catch(err => showToast('Login mislukt: ' + err.message, 'error'));
-		return;
+	if (!useAuthFirebase) return showToast('Authenticatie niet beschikbaar', 'error');
+	const stayLoggedIn = document.getElementById('stay-logged-in') && document.getElementById('stay-logged-in').checked;
+	const persistence = stayLoggedIn ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
+	if (stayLoggedIn) {
+		localStorage.setItem('nl_stay_logged_in', '1');
+	} else {
+		localStorage.removeItem('nl_stay_logged_in');
 	}
-	// Demo fallback — accept any credentials and continue as a demo user
-	currentUser = { id: 'demo-user', name: email.split('@')[0], email };
-	onAuthSuccess();
+	auth.setPersistence(persistence)
+		.then(() => auth.signInWithEmailAndPassword(email, password))
+		.then(() => sessionStorage.setItem('nl_session_active', '1'))
+		.catch(err => showToast('Login mislukt: ' + err.message, 'error'));
 }
 
 function handleRegister() {
@@ -141,25 +152,19 @@ function handleRegister() {
 	const password = document.getElementById('reg-password').value;
 	if (!email) return showToast('Vul een e-mail in', 'error');
 	if (password.length < 6) return showToast('Wachtwoord te kort', 'error');
-	if (useAuthFirebase) {
-		auth.createUserWithEmailAndPassword(email, password)
-			.then(async cred => {
-				const uid = cred.user.uid;
-				const userRef = db.collection('users').doc(uid);
-				try {
-					// create basic user document; nickname will be set after sign-in
-					await userRef.set({ displayName: '', isAdmin: false }, { merge: true });
-					// onAuthStateChanged will handle post-login nickname prompt
-				} catch (err) {
-					console.warn('Failed to create user doc', err);
-				}
-			})
-			.catch(err => showToast('Registratie mislukt: ' + err.message, 'error'));
-		return;
-	}
-	// Demo fallback
-	currentUser = { id: 'demo-user', name: email.split('@')[0], email };
-	onAuthSuccess();
+	if (!useAuthFirebase) return showToast('Authenticatie niet beschikbaar', 'error');
+	auth.createUserWithEmailAndPassword(email, password)
+		.then(async cred => {
+			const uid = cred.user.uid;
+			const userRef = db.collection('users').doc(uid);
+			try {
+				await userRef.set({ displayName: '', isAdmin: false }, { merge: true });
+			} catch (err) {
+				console.warn('Failed to create user doc', err);
+			}
+			sessionStorage.setItem('nl_session_active', '1');
+		})
+		.catch(err => showToast('Registratie mislukt: ' + err.message, 'error'));
 }
 
 function nameToEmail(name) {
@@ -195,6 +200,8 @@ function updateHeaderUser() {
 // Remove anonymous guest flow. Guests not allowed.
 
 function handleSignOut() {
+	localStorage.removeItem('nl_stay_logged_in');
+	sessionStorage.removeItem('nl_session_active');
 	if (useAuthFirebase) {
 		auth.signOut().then(() => {
 			currentUser = null;
@@ -204,7 +211,6 @@ function handleSignOut() {
 		}).catch(err => showToast('Afmelden mislukt: ' + err.message, 'error'));
 		return;
 	}
-	// demo fallback
 	currentUser = null;
 	updateHeaderUser();
 	document.getElementById('view-auth').style.display = '';
@@ -1029,7 +1035,8 @@ function savePrediction(matchId) {
 			return;
 		}
 	}
-	predictions[matchId] = { home: String(h), away: String(a), userId: currentUser && currentUser.id ? currentUser.id : 'demo-user' };
+	if (!currentUser || !currentUser.id) return showToast('Je moet ingelogd zijn om te voorspellen', 'error');
+	predictions[matchId] = { home: String(h), away: String(a), userId: currentUser.id };
 	localStorage.setItem('nl_predictions', JSON.stringify(predictions));
 	// persist to Firestore when available (doc id: userId_matchId)
 	if (useFirebase && currentUser && currentUser.id) {
@@ -1307,11 +1314,6 @@ function toggleRedCard(groupId, matchId, giverId, targetId) {
 	// Load fixtures into localStorage for immediate use
 	ensureFixturesLoaded();
 	try { updateHeaderUser(); } catch (e) {}
-	// If there's no signed-in user yet, show the app so anonymous visitors see matches
-	if (!currentUser) {
-		try { document.getElementById('view-auth').style.display = 'none'; document.getElementById('app').style.display = ''; } catch (e) {}
-		try { navigateTo('matches'); } catch (e) {}
-	}
 })();
 
 // Prompt user for nickname if none set
