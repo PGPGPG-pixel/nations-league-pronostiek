@@ -696,7 +696,7 @@ function renderLeaderboard(container) {
 
 	const list = view.querySelector('.leaderboard-list');
 	const rows = [
-		{ name: currentUser.name || 'Jij', points: calculatePoints() },
+		{ name: (currentUser && currentUser.name) || 'Jij', points: calculatePoints() },
 		{ name: 'Jan', points: Math.max(0, calculatePoints() - 1) },
 		{ name: 'Lisa', points: Math.max(0, calculatePoints() - 2) }
 	];
