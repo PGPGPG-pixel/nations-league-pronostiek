@@ -1106,13 +1106,7 @@ function _generateCode() {
 }
 
 function createGroup() {
-	if (!currentUser || !currentUser.id) {
-		// allow a quick demo/local owner when not logged in
-		const ownerName = prompt('Je naam (wordt groeps-eigenaar)') || 'Gast';
-		currentUser = { id: 'guest_' + Date.now().toString(36), name: ownerName, email: nameToEmail(ownerName) };
-		try { updateHeaderUser(); } catch (e) {}
-		showToast('Aangemeld als tijdelijk gebruiker ' + currentUser.name, 'success');
-	}
+	if (!currentUser || !currentUser.id) return showToast('Je moet ingelogd zijn om een groep aan te maken', 'error');
 	const name = prompt('Naam voor je vriendengroep? (bijv. "Kantoorpoule")');
 	if (!name) return showToast('Groepsnaam vereist', 'error');
 	const groups = JSON.parse(localStorage.getItem('nl_groups') || '[]');
@@ -1139,39 +1133,62 @@ function createGroup() {
 }
 
 function joinGroup() {
-	if (!currentUser || !currentUser.id) {
-		const guestName = prompt('Je naam (wordt je groepsnaam)') || 'Gast';
-		currentUser = { id: 'guest_' + Date.now().toString(36), name: guestName, email: nameToEmail(guestName) };
-		try { updateHeaderUser(); } catch (e) {}
-		showToast('Aangemeld als tijdelijk gebruiker ' + currentUser.name, 'success');
-	}
+	if (!currentUser || !currentUser.id) return showToast('Je moet ingelogd zijn om een groep te joinen', 'error');
 	const code = prompt('Voer groepscode in om te joinen');
 	if (!code) return;
-	const name = prompt('Jouw naam in de groep (bijv. Piet)') || (currentUser.name || 'Speler');
-	const groups = JSON.parse(localStorage.getItem('nl_groups') || '[]');
-	const g = groups.find(x => x.code === code.trim().toUpperCase());
-	if (!g) return showToast('Groep niet gevonden', 'error');
-	if (!g.members.find(m => m.id === currentUser.id)) {
-		g.members.push({ id: currentUser.id, name });
-		localStorage.setItem('nl_groups', JSON.stringify(groups));
-		// also persist membership to Firestore if group exists there
-		if (useFirebase) {
-			try {
-				// try to find group doc by code
-				db.collection('groups').where('code', '==', g.code).limit(1).get().then(q => {
-					if (!q.empty) {
-						const doc = q.docs[0];
-						doc.ref.update({ members: firebase.firestore.FieldValue.arrayUnion({ id: currentUser.id, name }), memberIds: firebase.firestore.FieldValue.arrayUnion(currentUser.id) }).catch(e => console.warn('Failed to update group members', e));
-					} else {
-						// create new doc
-						db.collection('groups').doc(g.id).set({ id: g.id, code: g.code, name: g.name, ownerId: g.ownerId || currentUser.id, members: g.members, memberIds: g.members.map(m=>m.id) }).catch(e => console.warn('Failed to create group doc', e));
-					}
-				}).catch(e => console.warn('Failed to query group by code', e));
-			} catch (e) { console.warn('Failed to persist join to Firestore', e); }
+	const trimmedCode = code.trim().toUpperCase();
+	const name = prompt('Jouw naam in de groep') || (currentUser.name || 'Speler');
+
+	// Try local cache first, then Firestore
+	const localGroups = JSON.parse(localStorage.getItem('nl_groups') || '[]');
+	const localMatch = localGroups.find(x => x.code === trimmedCode);
+
+	function addMemberToGroup(g, docRef) {
+		if (g.members && g.members.find(m => m.id === currentUser.id)) {
+			showToast('Je bent al lid van ' + g.name, 'default');
+			navigateTo('groups');
+			return;
 		}
+		const newMember = { id: currentUser.id, name };
+		// Update local groups list
+		const stored = JSON.parse(localStorage.getItem('nl_groups') || '[]');
+		const idx = stored.findIndex(x => x.code === trimmedCode);
+		if (idx !== -1) {
+			stored[idx].members = stored[idx].members || [];
+			stored[idx].members.push(newMember);
+			if (!stored[idx].memberIds) stored[idx].memberIds = [];
+			stored[idx].memberIds.push(currentUser.id);
+		} else {
+			const merged = { ...g, members: [...(g.members || []), newMember], memberIds: [...(g.memberIds || []), currentUser.id] };
+			stored.push(merged);
+		}
+		localStorage.setItem('nl_groups', JSON.stringify(stored));
+		// Persist membership to Firestore
+		if (useFirebase && docRef) {
+			docRef.update({
+				members: firebase.firestore.FieldValue.arrayUnion(newMember),
+				memberIds: firebase.firestore.FieldValue.arrayUnion(currentUser.id)
+			}).catch(e => console.warn('Failed to update group members in Firestore', e));
+		}
+		showToast('Je bent lid van ' + g.name, 'success');
+		navigateTo('groups');
 	}
-	showToast('Je bent lid van ' + g.name, 'success');
-	navigateTo('groups');
+
+	if (localMatch) {
+		addMemberToGroup(localMatch, useFirebase ? db.collection('groups').doc(localMatch.id) : null);
+		return;
+	}
+
+	// Not found locally — query Firestore
+	if (!useFirebase) return showToast('Groep niet gevonden', 'error');
+	showToast('Groep zoeken...', 'default');
+	db.collection('groups').where('code', '==', trimmedCode).limit(1).get()
+		.then(q => {
+			if (q.empty) return showToast('Groep niet gevonden. Controleer de code.', 'error');
+			const doc = q.docs[0];
+			addMemberToGroup(doc.data(), doc.ref);
+		})
+		.catch(e => { console.warn('Failed to query group by code', e); showToast('Groep niet gevonden: ' + e.message, 'error'); });
 }
 
 function renderGroupLeaderboard(container, group) {

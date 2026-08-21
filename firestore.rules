@@ -27,11 +27,9 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // Groups: group documents hold memberIds array and ownerId
+    // Groups: any authenticated user can read (needed to look up by code when joining)
     match /groups/{groupId} {
-      allow read: if request.auth != null &&
-        exists(/databases/$(database)/documents/groups/$(groupId))
-        && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.memberIds;
+      allow read: if request.auth != null;
       // create allowed when authenticated; creator should include themselves in memberIds
       allow create: if request.auth != null && request.resource.data.memberIds is list && request.auth.uid in request.resource.data.memberIds;
       allow update, delete: if request.auth != null &&
