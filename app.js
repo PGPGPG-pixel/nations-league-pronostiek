@@ -1022,7 +1022,7 @@ function createGroup() {
   const groups = JSON.parse(localStorage.getItem('nl_groups') || '[]');
   const code = _generateCode();
   const id = Date.now().toString(36);
-  const members = [{ id: currentUser.id, name: currentUser.name || 'Jij' }];
+  const members = [{ id: (currentUser && currentUser.id) || '', name: ((currentUser && currentUser.name) || 'Jij') }];
   const memberIds = members.map(m => m.id);
   const group = { id, code, name, ownerId: currentUser.id, members };
   groups.push(group);
@@ -1043,7 +1043,7 @@ function createGroup() {
 function joinGroup() {
   const code = prompt('Voer groepscode in om te joinen');
   if (!code) return;
-  const name = prompt('Jouw naam in de groep (bijv. Piet)') || (currentUser.name || 'Speler');
+  const name = prompt('Jouw naam in de groep (bijv. Piet)') || ((currentUser && currentUser.name) || 'Speler');
   const groups = JSON.parse(localStorage.getItem('nl_groups') || '[]');
   const g = groups.find(x => x.code === code.trim().toUpperCase());
   if (!g) return showToast('Groep niet gevonden', 'error');
@@ -1285,6 +1285,7 @@ async function saveProfileFromModal(uid) {
       try { await db.collection('users').doc(uid).set({ displayName }, { merge: true }); } catch (e) { console.warn('Failed to write displayName to users doc', e); }
     }
     if (currentUser && currentUser.id === uid) {
+      if (!currentUser) currentUser = { id: '', name: '' };
       currentUser.name = displayName;
       updateHeaderUser();
     }
