@@ -272,29 +272,63 @@ function getMatches() {
 function localizeCountry(name) {
 	if (!name) return '';
 	const map = {
-		'Netherlands':'Nederland',
-		'England':'Engeland',
-		'Scotland':'Schotland',
-		'Northern Ireland':'Noord-Ierland',
-		'Republic of Ireland':'Ierland',
-		'North Macedonia':'Noord-Macedonië',
+		'Albania':'Albanië',
+		'Andorra':'Andorra',
+		'Armenia':'Armenië',
+		'Austria':'Oostenrijk',
+		'Belarus':'Wit-Rusland',
+		'Belgium':'België',
+		'Bosnia':'Bosnië-Herzegovina',
+		'Bosnia and Herzegovina':'Bosnië-Herzegovina',
+		'Bulgaria':'Bulgarije',
+		'Croatia':'Kroatië',
+		'Cyprus':'Cyprus',
 		'Czechia':'Tsjechië',
-		'Bosnia':'Bosnië',
+		'Denmark':'Denemarken',
+		'England':'Engeland',
+		'Estonia':'Estland',
 		'Faroe Islands':'Faeröer',
+		'Finland':'Finland',
+		'France':'Frankrijk',
+		'Georgia':'Georgië',
+		'Germany':'Duitsland',
+		'Greece':'Griekenland',
+		'Hungary':'Hongarije',
+		'Iceland':'IJsland',
+		'Israel':'Israël',
+		'Italy':'Italië',
+		'Kazakhstan':'Kazachstan',
+		'Kosovo':'Kosovo',
+		'Latvia':'Letland',
+		'Liechtenstein':'Liechtenstein',
+		'Lithuania':'Litouwen',
+		'Luxembourg':'Luxemburg',
+		'Malta':'Malta',
+		'Moldova':'Moldavië',
+		'Montenegro':'Montenegro',
+		'Netherlands':'Nederland',
+		'North Macedonia':'Noord-Macedonië',
+		'Northern Ireland':'Noord-Ierland',
+		'Norway':'Noorwegen',
+		'Poland':'Polen',
+		'Portugal':'Portugal',
+		'Republic of Ireland':'Ierland',
+		'Romania':'Roemenië',
 		'San Marino':'San Marino',
+		'Scotland':'Schotland',
+		'Serbia':'Servië',
+		'Slovakia':'Slowakije',
+		'Slovenia':'Slovenië',
+		'Spain':'Spanje',
+		'Sweden':'Zweden',
+		'Switzerland':'Zwitserland',
 		'Turkey':'Turkije',
 		'Türkiye':'Turkije',
-		'Germany':'Duitsland',
-		'Spain':'Spanje',
-		'Portugal':'Portugal',
+		'Turkiye':'Turkije',
+		'Ukraine':'Oekraïne',
 		'Wales':'Wales',
-		'Italy':'Italië',
-		'Belgium':'België',
-		'Sweden':'Zweden',
-		'Romania':'Roemenië',
-		'Slovakia':'Slowakije',
-		'Moldova':'Moldavië',
-		'North Macedonia':'Noord-Macedonië'
+		'Gibraltar':'Gibraltar',
+		'Azerbaijan':'Azerbeidzjan',
 	};
 	return map[name] || name;
 }
@@ -647,10 +681,10 @@ function resetFixtures() {
 function countryFlag(name) {
 	// prefer image flags via country codes; fallback to emoji map
 	const codes = {
-		'Portugal':'pt','Wales':'gb-wls','Netherlands':'nl','Germany':'de','Serbia':'rs','Greece':'gr','Norway':'no','Denmark':'dk','Austria':'at','Israel':'il','Kosovo':'xk','Republic of Ireland':'ie','Liechtenstein':'li','Lithuania':'lt','Andorra':'ad','Malta':'mt','Italy':'it','Belgium':'be','Türkiye':'tr','Turkey':'tr','France':'fr','Georgia':'ge','Northern Ireland':'gb-nir','England':'gb-eng','Spain':'es','North Macedonia':'mk','Switzerland':'ch','Czechia':'cz','Croatia':'hr','Poland':'pl','Sweden':'se','Romania':'ro','Hungary':'hu','Ukraine':'ua','Scotland':'gb-sct','Slovenia':'si','Iceland':'is','Estonia':'ee','Finland':'fi','San Marino':'sm','Albania':'al','Belarus':'by','Slovakia':'sk','Moldova':'md','Bulgaria':'bg','Luxembourg':'lu','Faroe Islands':'fo','Kazakhstan':'kz','Armenia':'am','Latvia':'lv','Montenegro':'me','Cyprus':'cy','Gibraltar':'gi','Azerbaijan':'az','Bosnia':'ba','Bosnia and Herzegovina':'ba'
+		'Portugal':'pt','Wales':'gb-wls','Netherlands':'nl','Germany':'de','Serbia':'rs','Greece':'gr','Norway':'no','Denmark':'dk','Austria':'at','Israel':'il','Kosovo':'xk','Republic of Ireland':'ie','Liechtenstein':'li','Lithuania':'lt','Andorra':'ad','Malta':'mt','Italy':'it','Belgium':'be','Türkiye':'tr','Turkey':'tr','Turkiye':'tr','France':'fr','Georgia':'ge','Northern Ireland':'gb-nir','England':'gb-eng','Spain':'es','North Macedonia':'mk','Switzerland':'ch','Czechia':'cz','Croatia':'hr','Poland':'pl','Sweden':'se','Romania':'ro','Hungary':'hu','Ukraine':'ua','Scotland':'gb-sct','Slovenia':'si','Iceland':'is','Estonia':'ee','Finland':'fi','San Marino':'sm','Albania':'al','Belarus':'by','Slovakia':'sk','Moldova':'md','Bulgaria':'bg','Luxembourg':'lu','Faroe Islands':'fo','Kazakhstan':'kz','Armenia':'am','Latvia':'lv','Montenegro':'me','Cyprus':'cy','Gibraltar':'gi','Azerbaijan':'az','Bosnia':'ba','Bosnia and Herzegovina':'ba'
 	};
 	const emoji = {
-		'Portugal':'🇵🇹','Wales':'🏴','Netherlands':'🇳🇱','Germany':'🇩🇪','Serbia':'🇷🇸','Greece':'🇬🇷','Norway':'🇳🇴','Denmark':'🇩🇰','Austria':'🇦🇹','Israel':'🇮🇱','Kosovo':'🇽🇰','Republic of Ireland':'🇮🇪','Liechtenstein':'🇱🇮','Lithuania':'🇱🇹','Andorra':'🇦🇩','Malta':'🇲🇹','Italy':'🇮🇹','Belgium':'🇧🇪','Türkiye':'🇹🇷','France':'🇫🇷','Georgia':'🇬🇪','Northern Ireland':'🇬🇧','England':'🏴','Spain':'🇪🇸','North Macedonia':'🇲🇰','Switzerland':'🇨🇭','Czechia':'🇨🇿','Croatia':'🇭🇷','Poland':'🇵🇱','Sweden':'🇸🇪','Romania':'🇷🇴','Hungary':'🇭🇺','Ukraine':'🇺🇦','Scotland':'🏴','Slovenia':'🇸🇮','Iceland':'🇮🇸','Estonia':'🇪🇪','Finland':'🇫🇮','San Marino':'🇸🇲','Albania':'🇦🇱','Belarus':'🇧🇾','Slovakia':'🇸🇰','Moldova':'🇲🇩','Bulgaria':'🇧🇬','Luxembourg':'🇱🇺','Faroe Islands':'🇫🇴','Kazakhstan':'🇰🇿','Armenia':'🇦🇲','Latvia':'🇱🇻','Montenegro':'🇲🇪','Cyprus':'🇨🇾','Gibraltar':'🇬🇮','Azerbaijan':'🇦🇿','Bosnia':'🇧🇦','Bosnia and Herzegovina':'🇧🇦'
+		'Portugal':'🇵🇹','Wales':'🏴','Netherlands':'🇳🇱','Germany':'🇩🇪','Serbia':'🇷🇸','Greece':'🇬🇷','Norway':'🇳🇴','Denmark':'🇩🇰','Austria':'🇦🇹','Israel':'🇮🇱','Kosovo':'🇽🇰','Republic of Ireland':'🇮🇪','Liechtenstein':'🇱🇮','Lithuania':'🇱🇹','Andorra':'🇦🇩','Malta':'🇲🇹','Italy':'🇮🇹','Belgium':'🇧🇪','Türkiye':'🇹🇷','Turkey':'🇹🇷','Turkiye':'🇹🇷','France':'🇫🇷','Georgia':'🇬🇪','Northern Ireland':'🇬🇧','England':'🏴','Spain':'🇪🇸','North Macedonia':'🇲🇰','Switzerland':'🇨🇭','Czechia':'🇨🇿','Croatia':'🇭🇷','Poland':'🇵🇱','Sweden':'🇸🇪','Romania':'🇷🇴','Hungary':'🇭🇺','Ukraine':'🇺🇦','Scotland':'🏴','Slovenia':'🇸🇮','Iceland':'🇮🇸','Estonia':'🇪🇪','Finland':'🇫🇮','San Marino':'🇸🇲','Albania':'🇦🇱','Belarus':'🇧🇾','Slovakia':'🇸🇰','Moldova':'🇲🇩','Bulgaria':'🇧🇬','Luxembourg':'🇱🇺','Faroe Islands':'🇫🇴','Kazakhstan':'🇰🇿','Armenia':'🇦🇲','Latvia':'🇱🇻','Montenegro':'🇲🇪','Cyprus':'🇨🇾','Gibraltar':'🇬🇮','Azerbaijan':'🇦🇿','Bosnia':'🇧🇦','Bosnia and Herzegovina':'🇧🇦'
 	};
 	const key = name.trim();
 	const code = codes[key];
