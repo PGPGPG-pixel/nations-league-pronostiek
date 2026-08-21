@@ -141,10 +141,14 @@ function handleLogin() {
 	} else {
 		localStorage.removeItem('nl_stay_logged_in');
 	}
+	// Set session flag BEFORE sign-in so onAuthStateChanged sees it immediately
+	sessionStorage.setItem('nl_session_active', '1');
 	auth.setPersistence(persistence)
 		.then(() => auth.signInWithEmailAndPassword(email, password))
-		.then(() => sessionStorage.setItem('nl_session_active', '1'))
-		.catch(err => showToast('Login mislukt: ' + err.message, 'error'));
+		.catch(err => {
+			sessionStorage.removeItem('nl_session_active');
+			showToast('Login mislukt: ' + err.message, 'error');
+		});
 }
 
 function handleRegister() {
@@ -153,7 +157,10 @@ function handleRegister() {
 	if (!email) return showToast('Vul een e-mail in', 'error');
 	if (password.length < 6) return showToast('Wachtwoord te kort', 'error');
 	if (!useAuthFirebase) return showToast('Authenticatie niet beschikbaar', 'error');
-	auth.createUserWithEmailAndPassword(email, password)
+	// Set session flag BEFORE creating account so onAuthStateChanged sees it immediately
+	sessionStorage.setItem('nl_session_active', '1');
+	auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+		.then(() => auth.createUserWithEmailAndPassword(email, password))
 		.then(async cred => {
 			const uid = cred.user.uid;
 			const userRef = db.collection('users').doc(uid);
@@ -162,9 +169,11 @@ function handleRegister() {
 			} catch (err) {
 				console.warn('Failed to create user doc', err);
 			}
-			sessionStorage.setItem('nl_session_active', '1');
 		})
-		.catch(err => showToast('Registratie mislukt: ' + err.message, 'error'));
+		.catch(err => {
+			sessionStorage.removeItem('nl_session_active');
+			showToast('Registratie mislukt: ' + err.message, 'error');
+		});
 }
 
 function nameToEmail(name) {
