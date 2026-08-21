@@ -713,7 +713,7 @@ function renderLeaderboard(container) {
 
   rows.forEach((r, i) => {
     const row = document.createElement('div');
-    row.className = 'leaderboard-row ' + (r.name === (currentUser.name || 'Jij') ? 'current-user' : '');
+    row.className = 'leaderboard-row ' + (r.name === ((currentUser && currentUser.name) || 'Jij') ? 'current-user' : '');
     row.innerHTML = `
       <div class="rank-badge">${i+1}</div>
       <div class="player-info"><div class="player-name">${r.name}</div><div class="player-stats">${r.points} pts</div></div>
