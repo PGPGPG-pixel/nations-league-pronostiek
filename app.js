@@ -105,6 +105,26 @@ function setupFirebaseRealtime() {
 	});
 }
 
+// Expose key functions to `window` so inline `onclick` handlers work on the deployed site
+try {
+	window.navigateTo = navigateTo;
+	window.switchTab = switchTab;
+	window.handleLogin = handleLogin;
+	window.handleRegister = handleRegister;
+	window.openPredictionModal = openPredictionModal;
+	window.savePrediction = savePrediction;
+	window.closeModal = closeModal;
+	window.createGroup = createGroup;
+	window.joinGroup = joinGroup;
+	window.importFixturesFromTextarea = importFixturesFromTextarea;
+	window.loadFixturesFromServer = loadFixturesFromServer;
+	window.handleSignOut = handleSignOut;
+	window.openResultModal = openResultModal;
+	window.saveMatchResultFromModal = saveMatchResultFromModal;
+	window.startLiveFromAdmin = typeof startLiveFromAdmin === 'function' ? startLiveFromAdmin : (() => {});
+	window.stopLiveTracking = typeof stopLiveTracking === 'function' ? stopLiveTracking : (() => {});
+} catch (e) { console.warn('Failed to expose globals on window', e); }
+
 // Initialize firebase realtime wiring if possible
 setupFirebaseRealtime();
 
