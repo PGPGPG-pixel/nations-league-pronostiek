@@ -92,7 +92,7 @@ function setupFirebaseRealtime() {
 
 // Expose key functions to `window` so inline `onclick` handlers work on the deployed site
 // Each assignment is wrapped individually so one failure never blocks the others
-const _toExpose = { navigateTo, switchTab, handleLogin, handleRegister, savePrediction, closeModal, createGroup, joinGroup, importFixturesFromTextarea, loadFixturesFromServer, handleSignOut, openResultModal, saveMatchResultFromModal, startLiveFromAdmin, stopLiveTracking, resetFixtures, openProfileEditor };
+const _toExpose = { navigateTo, switchTab, handleLogin, handleRegister, savePrediction, closeModal, createGroup, joinGroup, importFixturesFromTextarea, loadFixturesFromServer, handleSignOut, openResultModal, saveMatchResultFromModal, startLiveFromAdmin, stopLiveTracking, resetFixtures, openProfileEditor, openRedCardModal };
 for (const [k, v] of Object.entries(_toExpose)) { try { window[k] = v; } catch (e) { console.warn('Failed to expose', k, e); } }
 // openPredictionModal is defined at module level and exposed below
 window.openPredictionModal = openPredictionModal;
@@ -707,30 +707,201 @@ function countryFlag(name) {
 function renderLeaderboard(container) {
 	const view = document.createElement('div');
 	view.className = 'leaderboard-view';
-	view.innerHTML = `
-		<div class="leaderboard-header"><h2>Klassement</h2><p>Demo-klassement op basis van voorspellingen</p></div>
-		<div class="leaderboard-list"></div>
-	`;
+	container.appendChild(view);
 
-	const list = view.querySelector('.leaderboard-list');
-	const rows = [
-		{ name: (currentUser && currentUser.name) || 'Jij', points: calculatePoints() },
-		{ name: 'Jan', points: Math.max(0, calculatePoints() - 1) },
-		{ name: 'Lisa', points: Math.max(0, calculatePoints() - 2) }
-	];
+	const groups = JSON.parse(localStorage.getItem('nl_groups') || '[]');
+	const myId = currentUser && currentUser.id;
+	const myGroups = groups.filter(g => g.members && g.members.some(m => m.id === myId));
+
+	if (!myGroups.length) {
+		view.innerHTML = `
+			<div class="leaderboard-header"><h2>Klassement</h2></div>
+			<div style="padding:24px;text-align:center">
+				<div style="font-size:2rem;margin-bottom:12px">👥</div>
+				<p>Je bent nog geen lid van een vriendengroep.</p>
+				<button class="btn btn-primary" onclick="switchTab('groups')" style="margin-top:8px">Maak of join een groep</button>
+			</div>`;
+		return;
+	}
+
+	let activeIdx = 0;
+
+	function showGroup(group) {
+		// clear previous content below header
+		while (view.lastChild) view.removeChild(view.lastChild);
+
+		// group selector tabs when in multiple groups
+		if (myGroups.length > 1) {
+			const tabs = document.createElement('div');
+			tabs.style.cssText = 'display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap';
+			myGroups.forEach((g, i) => {
+				const btn = document.createElement('button');
+				btn.className = 'btn btn-sm ' + (i === activeIdx ? 'btn-primary' : 'btn-secondary');
+				btn.textContent = g.name;
+				btn.onclick = () => { activeIdx = i; showGroup(myGroups[i]); };
+				tabs.appendChild(btn);
+			});
+			view.appendChild(tabs);
+		}
+
+		const header = document.createElement('div');
+		header.className = 'leaderboard-header';
+		header.innerHTML = `<h2>Klassement</h2><p>${group.name}</p>`;
+		view.appendChild(header);
+
+		const spinner = document.createElement('div');
+		spinner.style.padding = '20px';
+		spinner.textContent = 'Punten berekenen…';
+		view.appendChild(spinner);
+
+		fetchMemberPredictions(group).then(() => {
+			view.removeChild(spinner);
+			renderGroupStandings(view, group);
+		}).catch(() => {
+			spinner.textContent = 'Fout bij laden van voorspellingen.';
+		});
+	}
+
+	showGroup(myGroups[activeIdx]);
+}
+
+async function fetchMemberPredictions(group) {
+	if (!useFirebase) return;
+	const all = JSON.parse(localStorage.getItem('nl_member_predictions') || '{}');
+	await Promise.all((group.members || []).map(async member => {
+		if (member.id === (currentUser && currentUser.id)) {
+			all[member.id] = Object.assign({}, predictions);
+			return;
+		}
+		try {
+			const snap = await db.collection('predictions').where('userId', '==', member.id).get();
+			const userPreds = {};
+			snap.forEach(doc => {
+				const d = doc.data();
+				userPreds[d.matchId] = { home: String(d.home), away: String(d.away) };
+			});
+			all[member.id] = userPreds;
+		} catch (e) {
+			console.warn('fetchMemberPredictions failed for', member.id, e);
+		}
+	}));
+	localStorage.setItem('nl_member_predictions', JSON.stringify(all));
+}
+
+function renderGroupStandings(container, group) {
+	const matches = getMatches().slice();
+	matches.sort((a, b) => new Date(a.date) - new Date(b.date));
+	const lastMatch = matches[matches.length - 1];
+
+	const rows = (group.members || []).map(m => ({
+		id: m.id,
+		name: m.name,
+		points: computeUserPointsUpToMatch(m.id, lastMatch.id, group.id).total
+	}));
+	rows.sort((a, b) => b.points - a.points);
+
+	const list = document.createElement('div');
+	list.className = 'leaderboard-list';
+
+	const myId = currentUser && currentUser.id;
+	const givenCount = myId ? countRedCardsGivenInGroup(myId, group.id) : 0;
 
 	rows.forEach((r, i) => {
+		const isMe = r.id === myId;
 		const row = document.createElement('div');
-		row.className = 'leaderboard-row ' + (r.name === ((currentUser && currentUser.name) || 'Jij') ? 'current-user' : '');
+		row.className = 'leaderboard-row' + (isMe ? ' current-user' : '');
+
+		const crown = i === 0 ? ' 👑' : '';
 		row.innerHTML = `
-			<div class="rank-badge">${i+1}</div>
-			<div class="player-info"><div class="player-name">${r.name}</div><div class="player-stats">${r.points} pts</div></div>
+			<div class="rank-badge">${i + 1}</div>
+			<div class="player-info">
+				<div class="player-name">${r.name}${crown}</div>
+				<div class="player-stats">${r.points} pts</div>
+			</div>
 			<div class="points-value">${r.points}</div>
 		`;
+
+		if (!isMe && myId) {
+			const rcBtn = document.createElement('button');
+			rcBtn.className = 'btn btn-sm';
+			rcBtn.style.cssText = 'margin-left:8px;color:#c00;border-color:#c00';
+			rcBtn.textContent = '🔴';
+			rcBtn.title = givenCount >= 2 ? 'Je hebt al 2 rode kaarten uitgedeeld' : 'Geef rode kaart aan ' + r.name;
+			rcBtn.disabled = givenCount >= 2;
+			rcBtn.onclick = () => openRedCardModal(group, r.id, r.name, () => {
+				list.remove();
+				renderGroupStandings(container, group);
+			});
+			row.appendChild(rcBtn);
+		}
+
 		list.appendChild(row);
 	});
 
-	container.appendChild(view);
+	// show red card usage
+	if (myId) {
+		const info = document.createElement('div');
+		info.style.cssText = 'padding:10px 16px;font-size:0.82rem;color:var(--text-secondary)';
+		info.textContent = `Rode kaarten uitgedeeld: ${givenCount}/2`;
+		list.appendChild(info);
+	}
+
+	container.appendChild(list);
+}
+
+function openRedCardModal(group, targetId, targetName, onDone) {
+	const matches = getMatches().slice();
+	matches.sort((a, b) => new Date(a.date) - new Date(b.date));
+	const rc = getRedCardsForGroup(group.id);
+	const myId = currentUser && currentUser.id;
+
+	const modal = document.getElementById('modal-container');
+	const box = document.createElement('div');
+	box.className = 'modal-overlay';
+
+	const options = matches.map(m => {
+		const alreadyGiven = rc[m.id] && rc[m.id][targetId] && rc[m.id][targetId].includes(myId);
+		return `<option value="${m.id}"${alreadyGiven ? ' data-given="1"' : ''}>
+			${alreadyGiven ? '🔴 ' : ''}${localizeCountry(m.home)} - ${localizeCountry(m.away)} (${m.date.slice(0, 10)})
+		</option>`;
+	}).join('');
+
+	box.innerHTML = `
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3>🔴 Rode kaart — ${targetName}</h3>
+				<button class="modal-close" onclick="document.getElementById('modal-container').innerHTML=''">✕</button>
+			</div>
+			<div class="modal-body">
+				<p>Kies de match waarvoor je een rode kaart geeft aan <strong>${targetName}</strong>. De punten voor die match worden gehalveerd.</p>
+				<select id="rc-match-select" style="width:100%;padding:8px;margin:12px 0;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text)">
+					<option value="">— Kies een match —</option>
+					${options}
+				</select>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary" onclick="document.getElementById('modal-container').innerHTML=''">Annuleer</button>
+				<button class="btn btn-primary" id="rc-confirm-btn" style="background:#c00;border-color:#c00">Bevestig rode kaart</button>
+			</div>
+		</div>`;
+
+	modal.innerHTML = '';
+	modal.appendChild(box);
+
+	document.getElementById('rc-confirm-btn').onclick = () => {
+		const matchId = document.getElementById('rc-match-select').value;
+		if (!matchId) return showToast('Kies eerst een match', 'error');
+		const sel = document.getElementById('rc-match-select');
+		const opt = sel.options[sel.selectedIndex];
+		if (opt.dataset.given) {
+			// toggle off
+			toggleRedCard(group.id, matchId, myId, targetId);
+		} else {
+			toggleRedCard(group.id, matchId, myId, targetId);
+		}
+		document.getElementById('modal-container').innerHTML = '';
+		if (onDone) onDone();
+	};
 }
 
 function renderGroups(container) {
