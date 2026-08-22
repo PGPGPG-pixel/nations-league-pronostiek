@@ -1,5 +1,5 @@
 // Bump CACHE_NAME when releasing updated public assets so clients refresh cache.
-const CACHE_NAME = 'nl-pronostiek-v7';
+const CACHE_NAME = 'nl-pronostiek-v8';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
